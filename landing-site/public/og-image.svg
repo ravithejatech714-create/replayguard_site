@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f2f6f8"/>
+  <rect x="70" y="70" width="1060" height="490" rx="28" fill="#10202a"/>
+  <rect x="116" y="116" width="88" height="88" rx="18" fill="#117866"/>
+  <text x="160" y="172" text-anchor="middle" font-family="Arial, sans-serif" font-size="31" font-weight="700" fill="#fff">RG</text>
+  <text x="236" y="156" font-family="Arial, sans-serif" font-size="46" font-weight="800" fill="#fff">ReplayGuard</text>
+  <text x="116" y="270" font-family="Arial, sans-serif" font-size="66" font-weight="800" fill="#fff">Safe Kafka replay</text>
+  <text x="116" y="342" font-family="Arial, sans-serif" font-size="66" font-weight="800" fill="#88d3c4">and debugging</text>
+  <text x="116" y="420" font-family="Arial, sans-serif" font-size="30" fill="#c9d8df">Self-hosted replay workflows with validation, RBAC, audit history, and worker visibility.</text>
+  <rect x="742" y="138" width="310" height="294" rx="18" fill="#fff"/>
+  <rect x="778" y="178" width="170" height="18" rx="9" fill="#117866"/>
+  <rect x="778" y="232" width="236" height="22" rx="11" fill="#d5e1e7"/>
+  <rect x="778" y="286" width="204" height="22" rx="11" fill="#d5e1e7"/>
+  <rect x="778" y="340" width="256" height="22" rx="11" fill="#d5e1e7"/>
+</svg>
