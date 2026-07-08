@@ -1,5 +1,6 @@
-﻿import { useState } from 'react';
-import { demoLinks, faqs, features, metrics, pains, safety, screenshots, solutions } from './data/content';
+import { useState } from 'react';
+import { BrandLogo } from './BrandLogo';
+import { demoLinks, demoVideo, faqs, features, metrics, pains, pricing, safety, screenshots, solutions } from './data/content';
 
 export function App() {
   const [activeScreenshot, setActiveScreenshot] = useState<(typeof screenshots)[number] | null>(null);
@@ -8,16 +9,17 @@ export function App() {
     <div className="site-shell">
       <header className="topbar">
         <a className="brand" href="#top" aria-label="ReplayGuard home">
-          <span className="brand-mark">RG</span>
-          <span>ReplayGuard</span>
+          <BrandLogo />
         </a>
         <nav aria-label="Main navigation">
           <a href="#problem">Problem</a>
           <a href="#features">Features</a>
+          <a href="#demo">Demo</a>
+          <a href="#pricing">Pricing</a>
           <a href="#screenshots">Screenshots</a>
           <a href="#faq">FAQ</a>
         </nav>
-        <a className="nav-cta" href={demoLinks.requestDemo}>Request Demo</a>
+        <a className="nav-cta" href={demoLinks.scheduleWalkthrough}>Schedule Walkthrough</a>
       </header>
 
       <main id="top">
@@ -30,8 +32,8 @@ export function App() {
               to repeatable workflows with validation, RBAC, lifecycle controls, and worker progress tracking.
             </p>
             <div className="hero-actions">
-              <a className="button primary" href={demoLinks.requestDemo}>Request Demo</a>
-              <a className="button secondary" href={demoLinks.viewPlatform}>View Platform</a>
+              <a className="button primary" href={demoLinks.requestDemo}>Watch 3-Min Demo</a>
+              <a className="button secondary" href={demoLinks.scheduleWalkthrough}>Schedule Walkthrough</a>
             </div>
             <div className="trust-row" aria-label="Platform highlights">
               <span>Controlled replay</span>
@@ -88,6 +90,8 @@ export function App() {
           <EstimatePanel />
         </section>
 
+        <DemoSection />
+
         <section id="features" className="section">
           <div className="section-heading">
             <p className="eyebrow">Platform capabilities</p>
@@ -118,6 +122,42 @@ export function App() {
           </div>
         </section>
 
+        <section id="pricing" className="section pricing-section">
+          <div className="section-heading">
+            <p className="eyebrow">Self-hosted subscription</p>
+            <h2>Choose a plan for your Kafka replay operations.</h2>
+            <p>
+              ReplayGuard is delivered as a self-hosted platform with private image access, signed license keys,
+              product updates, and subscription-based support.
+            </p>
+          </div>
+          <div className="pricing-grid">
+            {pricing.map((plan) => (
+              <article className={`pricing-card ${plan.name === 'Prime' ? 'featured' : ''}`} key={plan.name}>
+                <div className="pricing-card-header">
+                  <span>{plan.badge}</span>
+                  <h3>{plan.name}</h3>
+                  <p>{plan.description}</p>
+                </div>
+                <div className="pricing-table">
+                  <div><span>India / 90 days</span><strong>{plan.india90}</strong></div>
+                  <div><span>India / yearly</span><strong>{plan.indiaYear}</strong></div>
+                  <div><span>Global / 90 days</span><strong>{plan.global90}</strong></div>
+                  <div><span>Global / yearly</span><strong>{plan.globalYear}</strong></div>
+                </div>
+                <ul>
+                  <li>{plan.users}</li>
+                  <li>{plan.profiles}</li>
+                  <li>{plan.jobs}</li>
+                  <li>{plan.support}</li>
+                </ul>
+              </article>
+            ))}
+          </div>
+          <p className="pricing-note">
+            Prices are list prices for self-hosted deployments. Taxes, procurement terms, and high-support enterprise requirements may vary.
+          </p>
+        </section>
         <section id="screenshots" className="section screenshots-section">
           <div className="section-heading">
             <p className="eyebrow">Product views</p>
@@ -148,7 +188,7 @@ export function App() {
               We will follow up with a focused product walkthrough.
             </p>
           </div>
-          <a className="button primary" href={demoLinks.requestDemo}>Request a Demo</a>
+          <a className="button primary" href={demoLinks.scheduleWalkthrough}>Schedule Walkthrough</a>
         </section>
 
         <section id="faq" className="section faq-section">
@@ -168,11 +208,12 @@ export function App() {
       </main>
 
       <footer className="footer">
-        <div className="brand"><span className="brand-mark">RG</span><span>ReplayGuard</span></div>
+        <div className="brand"><BrandLogo /></div>
         <div className="footer-links">
-          <a href={demoLinks.requestDemo}>Request Demo</a>
+          <a href={demoLinks.requestDemo}>Watch Demo</a>
           <a href={demoLinks.contact}>Contact</a>
           <a href="#screenshots">Screenshots</a>
+          <a href="#pricing">Pricing</a>
         </div>
         <p>Copyright {new Date().getFullYear()} ReplayGuard. All rights reserved.</p>
       </footer>
@@ -183,6 +224,41 @@ export function App() {
   );
 }
 
+function DemoSection() {
+  const videoPath = `${import.meta.env.BASE_URL}${demoVideo.path.replace(/^\//, '')}`;
+  const posterPath = `${import.meta.env.BASE_URL}${demoVideo.poster.replace(/^\//, '')}`;
+  return (
+    <section id="demo" className="section demo-video-section">
+      <div className="section-heading">
+        <p className="eyebrow">Product walkthrough</p>
+        <h2>Watch ReplayGuard handle a secured Kafka replay workflow.</h2>
+        <p>
+          See how a platform engineer can connect to a secured Kafka cluster, validate replay boundaries,
+          launch a controlled replay, and review the audit trail without sending Kafka data outside their network.
+        </p>
+      </div>
+      <div className="demo-video-layout">
+        <div className="video-frame">
+          <video controls preload="metadata" poster={posterPath}>
+            <source src={videoPath} type="video/mp4" />
+          </video>
+        </div>
+        <aside className="demo-request-panel">
+          <h3>Book a technical walkthrough</h3>
+          <p>
+            We will tailor the session around your Kafka topology, security model, replay use cases, and self-hosted deployment requirements.
+          </p>
+          <ul>
+            {demoVideo.bullets.map((item) => <li key={item}>{item}</li>)}
+          </ul>
+          <a className="button primary" href={demoLinks.scheduleWalkthrough}>Schedule Walkthrough</a>
+          <a className="button secondary" href={demoLinks.contact}>Ask a Question</a>
+          <small>ReplayGuard is self-hosted. We do not need access to your Kafka clusters for the walkthrough.</small>
+        </aside>
+      </div>
+    </section>
+  );
+}
 function ProductPreview() {
   return (
     <div className="product-preview" aria-label="ReplayGuard platform preview">
@@ -313,4 +389,3 @@ function ScreenshotLightbox({
     </div>
   );
 }
-

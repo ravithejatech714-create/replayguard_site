@@ -1,9 +1,19 @@
-﻿export const demoLinks = {
-  requestDemo: 'mailto:ravithejatech714@gmail.com?subject=ReplayGuard%20Demo%20Request&body=Hi%20Ravitheja%2C%0A%0AI%20would%20like%20to%20request%20a%20ReplayGuard%20demo.%0A%0ATeam%2FCompany%3A%0AKafka%20environment%3A%0AReplay%20or%20debugging%20use%20case%3A%0APreferred%20demo%20time%3A%0A',
+export const demoLinks = {
+  requestDemo: '#demo',
+  scheduleWalkthrough: 'mailto:ravithejatech714@gmail.com?subject=ReplayGuard%20Technical%20Walkthrough&body=Hi%20Ravitheja%2C%0A%0AI%20would%20like%20to%20schedule%20a%20ReplayGuard%20technical%20walkthrough.%0A%0ATeam%2FCompany%3A%0AKafka%20environment%3A%0AReplay%20or%20debugging%20use%20case%3A%0APreferred%20demo%20time%3A%0A',
   contact: 'mailto:ravithejatech714@gmail.com?subject=ReplayGuard%20Question&body=Hi%20Ravitheja%2C%0A%0AI%20have%20a%20question%20about%20ReplayGuard.%0A%0AQuestion%3A%0A',
   viewPlatform: '#screenshots',
 };
 
+export const demoVideo = {
+  path: '/demo/replayguard-demo.mp4',
+  poster: '/demo/replayguard-demo-cover.png',
+  bullets: [
+    'Create a secure Kafka profile with SASL/SCRAM and truststore configuration.',
+    'Browse topics and validate offset ranges before replay.',
+    'Run replay with worker progress, lifecycle controls, and audit history.',
+  ],
+};
 export const pains = [
   'Kafka replay can cause duplicate writes, unexpected downstream load, or replaying the wrong range.',
   'Manual replay scripts are hard to approve, repeat, pause, and audit.',
@@ -103,6 +113,60 @@ export const screenshots = [
   },
 ];
 
+export const pricing = [
+  {
+    name: 'Trial',
+    badge: '14-day evaluation',
+    description: 'Validate ReplayGuard with a small team before a paid self-hosted subscription.',
+    india90: 'Free',
+    indiaYear: 'Not applicable',
+    global90: 'Free',
+    globalYear: 'Not applicable',
+    users: '3 users',
+    profiles: '3 Kafka profiles',
+    jobs: '25 replay jobs',
+    support: 'Best-effort onboarding support',
+  },
+  {
+    name: 'Plus',
+    badge: 'Small teams',
+    description: 'For teams moving from ad-hoc replay scripts to controlled replay workflows.',
+    india90: 'INR 74,999',
+    indiaYear: 'INR 2,49,999',
+    global90: 'USD 2,499',
+    globalYear: 'USD 7,999',
+    users: '10 users',
+    profiles: '10 Kafka profiles',
+    jobs: '300 / 1,500 replay jobs',
+    support: 'Email support, bug fixes, minor updates',
+  },
+  {
+    name: 'Prime',
+    badge: 'Recommended',
+    description: 'For active platform teams running ReplayGuard across real operational workflows.',
+    india90: 'INR 1,99,999',
+    indiaYear: 'INR 6,99,999',
+    global90: 'USD 6,999',
+    globalYear: 'USD 19,999',
+    users: '25 users',
+    profiles: '25 Kafka profiles',
+    jobs: '2,000 / 10,000 replay jobs',
+    support: 'Priority support, upgrade help, feature-request consideration',
+  },
+  {
+    name: 'Premium',
+    badge: 'Larger organizations',
+    description: 'For heavier replay usage, multiple Kafka environments, and higher-touch support.',
+    india90: 'INR 4,99,999',
+    indiaYear: 'INR 17,99,999',
+    global90: 'USD 14,999',
+    globalYear: 'USD 49,999',
+    users: '75 users',
+    profiles: '75 Kafka profiles',
+    jobs: '10,000 / 60,000 replay jobs',
+    support: 'Priority support, live troubleshooting, guided upgrades',
+  },
+];
 export const faqs = [
   ['Is ReplayGuard self-hosted?', 'Yes. ReplayGuard is designed to run inside your environment so Kafka access, metadata, and operational controls stay under your infrastructure policies.'],
   ['Does ReplayGuard store Kafka messages?', 'ReplayGuard stores replay metadata, validation snapshots, progress, and audit events. The public product positioning avoids promising payload storage, and audit/logging flows are designed to avoid payload leakage.'],
@@ -114,4 +178,3 @@ export const faqs = [
   ['How is ReplayGuard delivered?', 'ReplayGuard is delivered as a self-hosted platform package for approved teams. Contact us for deployment, licensing, and installation details.'],
   ['How do I request a demo?', 'Use the Request Demo link and include a short note about your Kafka environment and replay/debugging needs.'],
 ];
-

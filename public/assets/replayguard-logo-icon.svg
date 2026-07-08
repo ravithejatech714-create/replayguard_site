@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ReplayGuard">
+  <defs>
+    <linearGradient id="tile" x1="72" y1="36" x2="440" y2="476" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0c7a68"/>
+      <stop offset=".55" stop-color="#12836c"/>
+      <stop offset="1" stop-color="#0a6b5c"/>
+    </linearGradient>
+    <linearGradient id="stream" x1="278" y1="342" x2="442" y2="410" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#b8eee3"/>
+      <stop offset="1" stop-color="#76c9ba"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="86" fill="url(#tile)"/>
+  <path
+    d="M126 127 256 68l130 59c31 14 48 33 48 64v119c0 85-55 151-178 195C133 461 78 395 78 310V191c0-31 17-50 48-64Z"
+    fill="none"
+    stroke="#fff"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="30"
+  />
+  <path
+    d="M343 116c70 36 107 99 92 160"
+    fill="none"
+    stroke="#fff"
+    stroke-linecap="round"
+    stroke-width="30"
+  />
+  <path d="M432 299 480 238l-76-14Z" fill="#fff"/>
+  <text
+    x="123"
+    y="304"
+    fill="#fff"
+    font-family="Inter, Segoe UI, Arial, sans-serif"
+    font-size="168"
+    font-weight="800"
+    letter-spacing="-8"
+  >RG</text>
+  <path
+    d="M282 352h103l40-34M282 405h103l40 34"
+    fill="none"
+    stroke="url(#stream)"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="24"
+  />
+  <circle cx="438" cy="307" r="28" fill="#12836c" stroke="url(#stream)" stroke-width="22"/>
+  <circle cx="438" cy="449" r="28" fill="#12836c" stroke="url(#stream)" stroke-width="22"/>
+</svg>
