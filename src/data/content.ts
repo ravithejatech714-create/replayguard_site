@@ -57,6 +57,25 @@ export const metrics = [
   },
 ];
 
+export const costSavings = [
+  {
+    title: 'Less custom replay scripting',
+    text: 'Engineers can use guided source, destination, partition, offset, rate, and schedule controls instead of repeatedly writing one-off replay scripts.',
+  },
+  {
+    title: 'Faster incident recovery',
+    text: 'Topic inspection, validation, replay execution, pause/resume controls, and worker progress live in one workflow, reducing coordination time during incidents.',
+  },
+  {
+    title: 'Lower operational risk',
+    text: 'RBAC, validation, admission limits, audit logs, and lifecycle events reduce the chance of replaying the wrong range or losing approval history.',
+  },
+  {
+    title: 'Better audit readiness',
+    text: 'ReplayGuard keeps a record of who created a replay, what was replayed, when it ran, and why, reducing manual evidence collection after production events.',
+  },
+];
+
 export const features = [
   ['Kafka Profile Management', 'Create and test named Kafka connections with encrypted credentials.'],
   ['Topic Explorer', 'Browse topics, partitions, offsets, timestamps, keys, headers, and payload previews.'],

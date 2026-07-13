@@ -486,6 +486,78 @@ h3 {
   color: #526471;
 }
 
+.savings-section {
+  background:
+    linear-gradient(180deg, #f8fafb 0%, #eef5f3 100%);
+}
+
+.savings-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.78fr) minmax(0, 1.22fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.savings-highlight,
+.savings-grid article {
+  border: 1px solid #d5e1e7;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 12px 28px rgb(30 52 63 / 6%);
+}
+
+.savings-highlight {
+  display: grid;
+  align-content: center;
+  padding: clamp(24px, 4vw, 38px);
+}
+
+.savings-highlight span {
+  margin-bottom: 14px;
+  color: #0f705f;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.savings-highlight strong {
+  display: block;
+  margin-bottom: 16px;
+  color: #10202a;
+  font-size: clamp(30px, 4vw, 46px);
+  line-height: 1.04;
+}
+
+.savings-highlight p {
+  margin-bottom: 0;
+}
+
+.savings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.savings-grid article {
+  padding: 22px;
+}
+
+.savings-grid h3 {
+  margin-bottom: 10px;
+}
+
+.savings-grid p {
+  margin-bottom: 0;
+  color: #526471;
+}
+
+.savings-note {
+  margin: 18px 0 0;
+  color: #526471;
+  font-size: 14px;
+}
+
 .feature-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -849,6 +921,7 @@ h3 {
 @media (max-width: 1080px) {
   .hero,
   .two-column,
+  .savings-layout,
   .demo-video-layout {
     grid-template-columns: 1fr;
   }
@@ -907,6 +980,7 @@ h3 {
   .safety-grid,
   .screenshot-grid,
   .pricing-grid,
+  .savings-grid,
   .estimate-panel {
     grid-template-columns: 1fr;
   }

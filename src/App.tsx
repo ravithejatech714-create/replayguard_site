@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { BrandLogo } from './BrandLogo';
-import { demoLinks, demoVideo, faqs, features, metrics, pains, pricing, safety, screenshots, solutions } from './data/content';
+import { costSavings, demoLinks, demoVideo, faqs, features, metrics, pains, pricing, safety, screenshots, solutions } from './data/content';
 
 export function App() {
   const [activeScreenshot, setActiveScreenshot] = useState<(typeof screenshots)[number] | null>(null);
@@ -88,6 +88,39 @@ export function App() {
             ))}
           </div>
           <EstimatePanel />
+        </section>
+
+        <section className="section savings-section">
+          <div className="section-heading">
+            <p className="eyebrow">Estimated cost and effort savings</p>
+            <h2>Reduce the hidden cost of manual Kafka replay work.</h2>
+            <p>
+              ReplayGuard is designed to reduce repeated engineering effort during replay preparation,
+              production debugging, recovery coordination, and audit follow-up.
+            </p>
+          </div>
+          <div className="savings-layout">
+            <div className="savings-highlight">
+              <span>Example impact model</span>
+              <strong>10 to 20+ engineering hours saved per month</strong>
+              <p>
+                For teams handling several Kafka recovery or debugging workflows each month,
+                structured replay can reduce scripting, validation, coordination, and audit time.
+              </p>
+            </div>
+            <div className="savings-grid">
+              {costSavings.map((item) => (
+                <article key={item.title}>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+          <p className="savings-note">
+            Savings are estimates, not guarantees. Actual impact depends on Kafka volume, incident frequency,
+            approval process, team size, and existing automation maturity.
+          </p>
         </section>
 
         <DemoSection />
