@@ -1,5 +1,4 @@
-﻿User-agent: *
+User-agent: *
 Allow: /
 
-Sitemap: https://ravithejatech714-create.github.io/replayguard_site/sitemap.xml
-
+Sitemap: https://replayguard.in/sitemap.xml

@@ -1,199 +1,291 @@
-export const demoLinks = {
-  requestDemo: '#demo',
-  scheduleWalkthrough: 'mailto:ravithejatech714@gmail.com?subject=ReplayGuard%20Technical%20Walkthrough&body=Hi%20Ravitheja%2C%0A%0AI%20would%20like%20to%20schedule%20a%20ReplayGuard%20technical%20walkthrough.%0A%0ATeam%2FCompany%3A%0AKafka%20environment%3A%0AReplay%20or%20debugging%20use%20case%3A%0APreferred%20demo%20time%3A%0A',
-  contact: 'mailto:ravithejatech714@gmail.com?subject=ReplayGuard%20Question&body=Hi%20Ravitheja%2C%0A%0AI%20have%20a%20question%20about%20ReplayGuard.%0A%0AQuestion%3A%0A',
-  viewPlatform: '#screenshots',
+export const site = {
+  canonicalUrl: 'https://replayguard.in',
+  productName: 'ReplayGuard',
+  productVersion: 'Version 1',
+  lastUpdated: 'July 2026',
+  founderName: 'Ravitheja',
+  linkedinUrl: 'https://www.linkedin.com/',
+  reviewCta: 'Book a Replay Safety Review',
+  evaluationCta: 'Discuss a Technical Evaluation',
 };
 
 export const demoVideo = {
   path: '/demo/replayguard-demo.mp4',
   poster: '/demo/replayguard-demo-cover.png',
-  bullets: [
-    'Create a secure Kafka profile with SASL/SCRAM and truststore configuration.',
-    'Browse topics and validate offset ranges before replay.',
-    'Run replay with worker progress, lifecycle controls, and audit history.',
-  ],
+  stages: ['Inspect', 'Validate', 'Execute', 'Monitor', 'Audit'],
 };
-export const pains = [
-  'Kafka replay can cause duplicate writes, unexpected downstream load, or replaying the wrong range.',
-  'Manual replay scripts are hard to approve, repeat, pause, and audit.',
-  'Production-like incident debugging takes too long when engineers must jump between brokers, scripts, and logs.',
-  'Message browsing can accidentally expose sensitive payloads without bounded inspection controls.',
-  'Replay without RBAC, validation, and admission limits can turn a fix into a second incident.',
-  'Teams often lack one view of replay status, worker progress, and historical operator actions.',
+
+export const diagnosticQuestions = [
+  'Was the correct topic, partition and offset range selected?',
+  'Has the estimated replay volume been reviewed?',
+  'Can the replay be rate-limited?',
+  'Can execution be paused or stopped safely?',
+  'Can you identify who initiated the replay and why?',
+  'Is there a complete audit trail after the incident?',
 ];
 
-export const solutions = [
-  'Create guided replay jobs with explicit source, destination, partition, offset range, and reason.',
-  'Validate replay requests before execution so risky or unavailable ranges are caught early.',
-  'Inspect Kafka topics with bounded browsing and payload-safe previews.',
-  'Use RBAC so administrators, operators, viewers, and auditors get appropriate access.',
-  'Track audit history and replay events as append-only operational records.',
-  'Monitor worker claims, progress, lease recovery, pause, cancel, retry, and rerun behavior.',
-  'Schedule replay windows and replay multiple partitions through controlled workflows.',
-  'Deploy self-hosted with PostgreSQL metadata, Redis runtime controls, and your Kafka connectivity.',
+export const replayComparison = [
+  ['Topic and offsets', 'Engineer selects manually', 'Structured replay request and validation'],
+  ['Estimated volume', 'Calculated separately', 'Reviewed during replay validation'],
+  ['Credentials', 'Often stored in scripts or local configuration', 'Managed through encrypted Kafka profiles'],
+  ['Rate control', 'Requires custom implementation', 'Per-job replay rate control'],
+  ['Progress', 'Logs and manual checks', 'Central job and partition progress'],
+  ['Pause or stop', 'Depends on the implementation', 'Controlled lifecycle actions'],
+  ['Operator reason', 'Usually maintained outside the replay operation', 'Recorded as part of the replay job'],
+  ['Audit history', 'Manual or incomplete', 'Central audit trail'],
+  ['Repeatability', 'Depends on the engineer and runbook', 'Standardized workflow'],
 ];
 
-export const metrics = [
-  {
-    value: 'Guided',
-    label: 'replay preparation',
-    text: 'Reduce replay preparation from manual scripts to structured workflows.',
-  },
-  {
-    value: 'Auditable',
-    label: 'operator actions',
-    text: 'Centralize replay history across jobs, workers, and audit events.',
-  },
-  {
-    value: 'Bounded',
-    label: 'inspection and replay',
-    text: 'Add guardrails before messages are browsed or replayed.',
-  },
-  {
-    value: 'Self-hosted',
-    label: 'deployment model',
-    text: 'Keep metadata and Kafka access inside your environment.',
-  },
+export const workflowSteps = [
+  ['Connect', 'Configure a reusable Kafka profile.'],
+  ['Inspect', 'Browse topics, partitions, offsets and selected message metadata.'],
+  ['Select', 'Define the source, destination and exact replay ranges.'],
+  ['Validate', 'Check connectivity, topic availability, offset boundaries, limits and replay configuration.'],
+  ['Execute', 'Run a dry check or controlled replay through the replay worker.'],
+  ['Control', 'Monitor progress and pause, resume, stop or cancel execution.'],
+  ['Audit', 'Preserve the operator, business reason and replay lifecycle history.'],
 ];
 
-export const costSavings = [
-  {
-    title: 'Less custom replay scripting',
-    text: 'Engineers can use guided source, destination, partition, offset, rate, and schedule controls instead of repeatedly writing one-off replay scripts.',
-  },
-  {
-    title: 'Faster incident recovery',
-    text: 'Topic inspection, validation, replay execution, pause/resume controls, and worker progress live in one workflow, reducing coordination time during incidents.',
-  },
-  {
-    title: 'Lower operational risk',
-    text: 'RBAC, validation, admission limits, audit logs, and lifecycle events reduce the chance of replaying the wrong range or losing approval history.',
-  },
-  {
-    title: 'Better audit readiness',
-    text: 'ReplayGuard keeps a record of who created a replay, what was replayed, when it ran, and why, reducing manual evidence collection after production events.',
-  },
+export const operationalImpact = [
+  ['Less manual preparation', 'Replace one-off scripts and repeated offset calculations with a structured replay request.'],
+  ['Faster operational visibility', 'Follow execution, partition progress and lifecycle events from one interface.'],
+  ['Stronger accountability', 'Preserve who initiated the replay, what was selected and why it was performed.'],
 ];
 
-export const features = [
-  ['Kafka Profile Management', 'Create and test named Kafka connections with encrypted credentials.'],
-  ['Topic Explorer', 'Browse topics, partitions, offsets, timestamps, keys, headers, and payload previews.'],
-  ['Replay Validation', 'Check route safety, partition availability, offset boundaries, and replay limits.'],
-  ['Replay Execution', 'Run dry-run or replay jobs through a worker-controlled lifecycle.'],
-  ['Transactional Mode', 'Use Kafka transactional replay where supported by the target cluster and route.'],
-  ['Multi-Partition Replay', 'Specify per-partition ranges for controlled batch replay.'],
-  ['Scheduled Windows', 'Delay execution and limit jobs to a replay window.'],
-  ['Lifecycle Controls', 'Pause, resume, cancel, retry, and rerun replay jobs.'],
-  ['Operational Dashboard', 'See active jobs, recent failures, stale workers, and platform activity.'],
-  ['Audit Logs', 'Review operator actions without exposing message payloads in logs.'],
-  ['Self-Hosted Deployment', 'Run in your infrastructure with Docker, PostgreSQL, Redis, and Kafka.'],
-];
-
-export const safety = [
-  ['RBAC', 'Separate permissions for administration, operation, viewing, and audit review.'],
-  ['Session Security', 'HTTP-only application session cookies with CSRF protection.'],
-  ['Credential Protection', 'Kafka profile credentials are encrypted at rest.'],
-  ['Payload Discipline', 'Audit logs and application logs avoid storing Kafka message payloads.'],
-  ['Bounded Browsing', 'Message inspection uses request limits and payload budgets.'],
-  ['Admission Controls', 'Replay creation is constrained by active job and rate limits.'],
+export const capabilityGroups = [
+  {
+    title: 'Inspect and prepare',
+    items: [
+      'Reusable Kafka profiles',
+      'Topic Explorer',
+      'Partition and offset boundaries',
+      'Message metadata and bounded payload preview',
+      'Multi-partition selection',
+    ],
+  },
+  {
+    title: 'Validate and execute',
+    items: [
+      'Replay validation',
+      'Dry-run mode',
+      'Per-job rate limits',
+      'Scheduled execution',
+      'Replay execution windows',
+      'Kafka transactional producing where supported',
+    ],
+  },
+  {
+    title: 'Operate safely',
+    items: [
+      'Worker-controlled lifecycle',
+      'Pause, resume, stop and cancel',
+      'Worker leases and recovery',
+      'Progress checkpoints',
+      'Per-partition progress',
+      'Operational dashboard',
+    ],
+  },
+  {
+    title: 'Govern and audit',
+    items: [
+      'Role-based access control',
+      'Audit history',
+      'User management',
+      'Replay business reason',
+      'Replay metadata headers',
+      'Licence and subscription controls',
+    ],
+  },
 ];
 
 export const screenshots = [
   {
-    title: 'Dashboard',
-    path: '/screenshots/dashboard.png',
-    text: 'A control-plane summary of replay status, worker health, recent failures, and audit activity.',
+    title: 'Topic Explorer',
+    path: '/screenshots/topic-explorer.png',
+    text: 'Inspect Kafka topics, partitions, offsets, keys and bounded message previews before selecting a replay range.',
   },
   {
     title: 'Replay Creation',
     path: '/screenshots/replay-creation.png',
-    text: 'Create a replay request with source and destination profiles, topics, offset ranges, execution mode, and validation.',
+    text: 'Create a structured replay request with route, partition ranges, rate limits, execution mode and validation.',
   },
   {
-    title: 'Replay Detail',
+    title: 'Replay Execution Details',
     path: '/screenshots/replay-detail.png',
-    text: 'Inspect replay progress, partitions, validation snapshots, idempotency metadata, and lifecycle events.',
-  },
-  {
-    title: 'Topic Explorer',
-    path: '/screenshots/topic-explorer.png',
-    text: 'Browse topic metadata and message previews using bounded offset, timestamp, and key filters.',
+    text: 'Review execution status, per-partition progress, validation snapshots, idempotency metadata and lifecycle events.',
   },
   {
     title: 'Kafka Profiles',
     path: '/screenshots/kafka-profiles.png',
-    text: 'Manage reusable Kafka connections and validate broker access before replay workflows use them.',
+    text: 'Configure reusable Kafka connections and validate broker access before operators use them in replay workflows.',
   },
   {
-    title: 'Audit Logs',
+    title: 'Audit History',
     path: '/screenshots/audit-logs.png',
-    text: 'Review administrative, replay, browsing, and lifecycle actions with sanitized metadata.',
+    text: 'Review replay, browsing, administrative and lifecycle actions through a central audit trail.',
+  },
+  {
+    title: 'Dashboard',
+    path: '/screenshots/dashboard.png',
+    text: 'Monitor replay status, worker health, recent failures, audit activity and subscription usage.',
   },
 ];
 
-export const pricing = [
+export const safetyGroups = [
   {
-    name: 'Trial',
-    badge: '14-day evaluation',
-    description: 'Validate ReplayGuard with a small team before a paid self-hosted subscription.',
-    india90: 'Free',
-    indiaYear: 'Not applicable',
-    global90: 'Free',
-    globalYear: 'Not applicable',
-    users: '3 users',
-    profiles: '3 Kafka profiles',
-    jobs: '25 replay jobs',
-    support: 'Best-effort onboarding support',
+    title: 'Access',
+    items: [
+      'Role-based permissions',
+      'Mandatory first-login password change',
+      'Secure browser sessions',
+      'Administrative user controls',
+      'CSRF protection',
+    ],
   },
   {
-    name: 'Plus',
-    badge: 'Small teams',
-    description: 'For teams moving from ad-hoc replay scripts to controlled replay workflows.',
-    india90: 'INR 74,999',
-    indiaYear: 'INR 2,49,999',
-    global90: 'USD 2,499',
-    globalYear: 'USD 7,999',
-    users: '10 users',
-    profiles: '10 Kafka profiles',
-    jobs: '300 / 1,500 replay jobs',
-    support: 'Email support, bug fixes, minor updates',
+    title: 'Data and credentials',
+    items: [
+      'Encrypted Kafka credentials',
+      'Customer-controlled infrastructure',
+      'No message payloads in audit logs',
+      'Bounded topic inspection',
+      'Customer-controlled Kafka network access',
+    ],
   },
   {
-    name: 'Prime',
-    badge: 'Recommended',
-    description: 'For active platform teams running ReplayGuard across real operational workflows.',
-    india90: 'INR 1,99,999',
-    indiaYear: 'INR 6,99,999',
-    global90: 'USD 6,999',
-    globalYear: 'USD 19,999',
-    users: '25 users',
-    profiles: '25 Kafka profiles',
-    jobs: '2,000 / 10,000 replay jobs',
-    support: 'Priority support, upgrade help, feature-request consideration',
-  },
-  {
-    name: 'Premium',
-    badge: 'Larger organizations',
-    description: 'For heavier replay usage, multiple Kafka environments, and higher-touch support.',
-    india90: 'INR 4,99,999',
-    indiaYear: 'INR 17,99,999',
-    global90: 'USD 14,999',
-    globalYear: 'USD 49,999',
-    users: '75 users',
-    profiles: '75 Kafka profiles',
-    jobs: '10,000 / 60,000 replay jobs',
-    support: 'Priority support, live troubleshooting, guided upgrades',
+    title: 'Execution safety',
+    items: [
+      'Validation before execution',
+      'Replay rate and admission limits',
+      'Pause, resume, stop and cancel',
+      'Scheduling and replay windows',
+      'Append-only operational events',
+      'Controlled rerun and recovery behavior',
+    ],
   },
 ];
+
+export const deploymentCallouts = [
+  'Kafka records remain in the customer-controlled environment.',
+  'Kafka credentials are configured within the customer deployment.',
+  'ReplayGuard does not require direct vendor access to customer Kafka brokers.',
+  'Customers control network routes and Kafka permissions.',
+  'ReplayGuard images are delivered through a private registry workflow.',
+];
+
+export const audienceFit = {
+  suitable: [
+    'Platform engineering teams operating Kafka',
+    'SRE teams responsible for incident recovery',
+    'Data-platform teams managing event pipelines',
+    'Backend teams handling reprocessing and backfills',
+    'Regulated teams requiring operator accountability',
+  ],
+  notIntended: [
+    'Teams requiring only basic topic browsing',
+    'Companies that never perform message replay or reprocessing',
+    'Teams seeking a hosted Kafka service',
+    'Teams trying to replace their entire Kafka platform',
+  ],
+};
+
+export const evaluationSteps = [
+  ['Workflow review', 'Review the team’s current replay method, operational risks and technical requirements.'],
+  ['Technical fit', 'Confirm deployment, networking and Kafka security prerequisites.'],
+  ['Non-production installation', 'Deploy ReplayGuard in a selected customer-controlled environment.'],
+  ['Controlled scenario', 'Inspect, validate and replay a defined test range.'],
+  ['Success review', 'Assess safety, usability, auditability and operational fit.'],
+];
+
+export const successCriteria = [
+  'Kafka connectivity verified',
+  'Replay request validated',
+  'Dry-run completed',
+  'Controlled replay completed',
+  'Rate controls tested',
+  'Lifecycle actions verified',
+  'Audit history reviewed',
+  'Removal procedure documented',
+];
+
+export const fitComparisons = [
+  ['Kafka scripts', 'Flexible and familiar', 'Safety and repeatability depend on implementation and operator discipline'],
+  ['Consumer offset-reset tools', 'Useful for consumer-group repositioning', 'Not a complete selective replay validation, execution and audit workflow'],
+  ['General Kafka UIs', 'Useful for topic browsing and administration', 'Controlled replay governance is not always their primary purpose'],
+  ['Internal replay platforms', 'Fully customizable', 'Require engineering ownership, maintenance and ongoing support'],
+  ['ReplayGuard', 'Purpose-built replay validation, execution control and audit workflow', 'Requires customer deployment and technical evaluation'],
+];
+
 export const faqs = [
-  ['Is ReplayGuard self-hosted?', 'Yes. ReplayGuard is designed to run inside your environment so Kafka access, metadata, and operational controls stay under your infrastructure policies.'],
-  ['Does ReplayGuard store Kafka messages?', 'ReplayGuard stores replay metadata, validation snapshots, progress, and audit events. The public product positioning avoids promising payload storage, and audit/logging flows are designed to avoid payload leakage.'],
-  ['Does it support exactly-once replay?', 'Yes. ReplayGuard supports Kafka transactional replay for routes and clusters that support Kafka transactions, so records are produced to the destination topic exactly once during a healthy committed execution. ReplayGuard also records replay headers and checkpoint metadata for operational traceability. As with any system coordinating Kafka with an external control-plane database, customers should keep PostgreSQL highly available; if the database is unavailable during a critical checkpoint, ReplayGuard protects recovery with durable job state and replay metadata, but downstream consumers should still follow idempotent processing practices for maximum resilience.'],
-  ['Can it replay multiple partitions?', 'Yes. Replay jobs can include per-partition ranges so operators can replay a controlled subset of a topic.'],
-  ['Can jobs be scheduled?', 'Yes. Jobs can have scheduled starts and replay windows so operators can align replay work to controlled time periods.'],
-  ['How is access controlled?', 'ReplayGuard uses role-based access controls for administration, replay operations, topic inspection, user management, and audit review.'],
-  ['Can it connect to private Kafka clusters?', 'Yes. The platform is self-hosted and configured with Kafka profiles that point to broker endpoints reachable from your deployment.'],
-  ['How is ReplayGuard delivered?', 'ReplayGuard is delivered as a self-hosted platform package for approved teams. Contact us for deployment, licensing, and installation details.'],
-  ['How do I request a demo?', 'Use the Request Demo link and include a short note about your Kafka environment and replay/debugging needs.'],
+  [
+    'Is ReplayGuard a hosted SaaS product?',
+    'No. ReplayGuard is deployed inside the customer’s own infrastructure using private container images and a signed subscription licence. Customers control Kafka connectivity, supporting infrastructure, networking and application access.',
+  ],
+  [
+    'Does ReplayGuard store Kafka message payloads?',
+    'ReplayGuard stores replay configuration, validation results, progress checkpoints and audit metadata required to operate replay jobs. Kafka message payloads are not written to audit logs or application logs. Topic Explorer displays bounded message previews retrieved from the customer’s Kafka environment.',
+  ],
+  [
+    'What delivery guarantees does ReplayGuard support?',
+    'ReplayGuard supports at-least-once replay and Kafka transactional producing where the selected Kafka route supports transactions. Kafka transactions help prevent partial production within a committed transaction. Because ReplayGuard also coordinates replay state and checkpoints outside Kafka, downstream consumers should remain idempotent for maximum end-to-end resilience.',
+  ],
+  [
+    'How is ReplayGuard delivered?',
+    'ReplayGuard is delivered through private container images, customer-facing deployment documentation and a signed subscription licence. Customers configure Kafka connectivity and supporting infrastructure inside their own environment.',
+  ],
+  [
+    'Does ReplayGuard replace existing Kafka platforms?',
+    'No. ReplayGuard is focused on controlled Kafka replay and debugging. It is designed to complement existing Kafka infrastructure, observability and administration tools.',
+  ],
+  [
+    'Can ReplayGuard connect to secured Kafka clusters?',
+    'ReplayGuard supports common Kafka security configurations, including SSL, SASL_PLAINTEXT, SASL_SSL, PLAIN, SCRAM-SHA-256 and SCRAM-SHA-512, subject to customer configuration and environment compatibility.',
+  ],
+  [
+    'Can replay jobs be paused or stopped?',
+    'Yes. ReplayGuard supports controlled lifecycle actions including pause, resume, stop and cancel, with execution state and audit history recorded by the platform.',
+  ],
+  [
+    'How do we evaluate ReplayGuard?',
+    'Evaluation begins with a replay workflow review, followed by technical fit confirmation and a scoped non-production deployment against a defined replay scenario.',
+  ],
 ];
+
+export const legalPages = {
+  privacy: {
+    title: 'Privacy',
+    eyebrow: 'Website privacy',
+    body: [
+      'ReplayGuard’s public website is intended to explain the product and collect technical evaluation interest. Do not submit production secrets, Kafka credentials, customer payloads or confidential incident data through public website forms.',
+      'If a lead-capture endpoint is configured, submitted contact details may be used to respond to product enquiries, schedule technical discussions and manage evaluation requests.',
+      'ReplayGuard is self-hosted for customer deployments. Customer Kafka data and supporting infrastructure remain under customer control.',
+    ],
+  },
+  terms: {
+    title: 'Terms',
+    eyebrow: 'Website terms',
+    body: [
+      'The information on this website is provided for product evaluation and discussion. Product capabilities may depend on customer environment, Kafka configuration and subscription terms.',
+      'ReplayGuard is delivered through private container images, customer-facing documentation and signed subscription licensing.',
+      'Commercial terms, support commitments and deployment scope should be confirmed in writing before production use.',
+    ],
+  },
+  security: {
+    title: 'Security',
+    eyebrow: 'Security posture',
+    body: [
+      'ReplayGuard is designed for self-hosted deployment inside customer-controlled infrastructure. Customers control network routes, Kafka connectivity, credentials, PostgreSQL, Redis and application access.',
+      'The platform supports role-based access, secure browser sessions, CSRF protection, encrypted Kafka profile credentials, bounded message inspection and replay lifecycle controls.',
+      'ReplayGuard does not claim formal third-party certifications on this website. Customer security reviews should be performed during technical evaluation.',
+    ],
+  },
+  contact: {
+    title: 'Contact',
+    eyebrow: 'Technical evaluation',
+    body: [
+      'Use the Replay Safety Review form on the homepage to request a technical discussion.',
+      'A good first conversation covers your current replay method, Kafka security model, deployment requirements and one representative replay scenario.',
+    ],
+  },
+};
+

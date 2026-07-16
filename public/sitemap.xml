@@ -1,7 +1,18 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://ravithejatech714-create.github.io/replayguard_site/</loc>
+    <loc>https://replayguard.in/</loc>
+  </url>
+  <url>
+    <loc>https://replayguard.in/#/privacy</loc>
+  </url>
+  <url>
+    <loc>https://replayguard.in/#/terms</loc>
+  </url>
+  <url>
+    <loc>https://replayguard.in/#/security</loc>
+  </url>
+  <url>
+    <loc>https://replayguard.in/#/contact</loc>
   </url>
 </urlset>
-
