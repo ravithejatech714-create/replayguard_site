@@ -36,8 +36,8 @@ export function LeadCaptureForm() {
 
   const configMissing = !endpoint;
   const mailtoHref = useMemo(() => {
-    const subject = encodeURIComponent('ReplayGuard Kafka Replay Safety Review');
-    const body = encodeURIComponent('Hi Ravitheja,\n\nI would like to discuss a ReplayGuard Kafka Replay Safety Review.\n\nCompany:\nCurrent replay method:\nPrimary replay concern:\n');
+    const subject = encodeURIComponent('ReplayGuard Kafka Recovery Workflow Review');
+    const body = encodeURIComponent('Hi Ravitheja,\n\nI would like to discuss a ReplayGuard Kafka Recovery Workflow Review.\n\nCompany:\nCurrent recovery method:\nPrimary recovery concern:\n');
     return `mailto:${fallbackContactEmail}?subject=${subject}&body=${body}`;
   }, []);
 
@@ -153,10 +153,10 @@ export function LeadCaptureForm() {
       <FormField label="Preferred time zone" field="preferredTimeZone" error={errors.preferredTimeZone} register={fieldRefs}>
         <input value={form.preferredTimeZone} placeholder="IST, UTC, EST..." onChange={(event) => updateField('preferredTimeZone', event.target.value)} maxLength={80} />
       </FormField>
-      <FormField label="Current replay method" field="currentReplayMethod" error={errors.currentReplayMethod} required full register={fieldRefs}>
+      <FormField label="Current recovery method" field="currentReplayMethod" error={errors.currentReplayMethod} required full register={fieldRefs}>
         <textarea value={form.currentReplayMethod} onChange={(event) => updateField('currentReplayMethod', event.target.value)} maxLength={1200} />
       </FormField>
-      <FormField label="Primary replay concern" field="primaryReplayConcern" error={errors.primaryReplayConcern} full register={fieldRefs}>
+      <FormField label="Primary recovery concern" field="primaryReplayConcern" error={errors.primaryReplayConcern} full register={fieldRefs}>
         <textarea value={form.primaryReplayConcern} onChange={(event) => updateField('primaryReplayConcern', event.target.value)} maxLength={1200} />
       </FormField>
       <label className="checkbox-field">
@@ -182,7 +182,7 @@ export function LeadCaptureForm() {
         <div className="form-success-panel" role="status" aria-live="polite" tabIndex={-1} ref={successRef}>
           <h3>Request received</h3>
           <p>
-            Thank you. Your Kafka Replay Safety Review request has been submitted successfully.
+            Thank you. Your Kafka Recovery Workflow Review request has been submitted successfully.
             We will review the details and contact you using the work email provided.
           </p>
           <small>For urgent enquiries, use the contact details provided on the ReplayGuard website.</small>
@@ -190,7 +190,7 @@ export function LeadCaptureForm() {
       )}
 
       <button className="button primary" type="submit" disabled={submitting || configMissing}>
-        {submitting ? 'Submitting...' : 'Book a Replay Safety Review'}
+        {submitting ? 'Submitting...' : 'Book a Recovery Workflow Review'}
       </button>
     </form>
   );

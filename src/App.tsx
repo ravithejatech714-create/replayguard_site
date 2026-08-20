@@ -3,6 +3,7 @@ import { track } from './analytics';
 import { BrandLogo } from './BrandLogo';
 import { LeadCaptureForm } from './LeadCaptureForm';
 import {
+  automationControls,
   audienceFit,
   capabilityGroups,
   demoVideo,
@@ -13,12 +14,14 @@ import {
   fitComparisons,
   legalPages,
   operationalImpact,
+  governanceSteps,
+  recoveryOperations,
   replayComparison,
+  sameTopicSafeguards,
   safetyGroups,
   screenshots,
   site,
   successCriteria,
-  workflowSteps,
 } from './data/content';
 
 type Screenshot = (typeof screenshots)[number];
@@ -63,7 +66,8 @@ function Header() {
       </a>
       <nav className="main-nav" aria-label="Main navigation">
         <a href="#problem">Problem</a>
-        <a href="#workflow">Workflow</a>
+        <a href="#operations">Operations</a>
+        <a href="#governance">Governance</a>
         <a href="#product">Product</a>
         <a href="#security">Security</a>
         <a href="#deployment">Deployment</a>
@@ -75,7 +79,7 @@ function Header() {
         href="#request-review"
         onClick={() => track('hero_review_cta_click', { source: 'header' })}
       >
-        Book a Replay Safety Review
+        Book a Recovery Review
       </a>
     </header>
   );
@@ -92,9 +96,12 @@ function MarketingPage({
     <main id="main-content">
       <HeroSection />
       <DiagnosticQuestions />
+      <RecoveryOperations />
       <DemoVideoSection />
       <ReplayComparison />
       <ReplayWorkflow />
+      <AutomationSection />
+      <SameTopicSection />
       <OperationalImpact />
       <ProductCapabilities />
       <ProductScreenshots activeScreenshot={activeScreenshot} onOpen={setActiveScreenshot} />
@@ -115,11 +122,12 @@ function HeroSection() {
   return (
     <section id="top" className="hero">
       <div className="hero-copy">
-        <p className="eyebrow">Self-hosted Kafka replay control plane</p>
-        <h1>Replay Kafka messages without relying on risky production scripts</h1>
+        <p className="eyebrow">Self-hosted Kafka recovery control plane</p>
+        <h1>Govern Kafka recovery inside your infrastructure</h1>
         <p className="hero-text">
-          ReplayGuard gives platform and SRE teams a controlled workflow to inspect, validate,
-          execute and audit Kafka replays inside their own infrastructure.
+          ReplayGuard gives platform and SRE teams one governed workflow for offset-range replay,
+          timestamp recovery, DLQ redrive and consumer-group reset, with enforceable policies,
+          maker-checker approvals and evidence after execution.
         </p>
         <div className="hero-actions">
           <a
@@ -127,16 +135,16 @@ function HeroSection() {
             href="#request-review"
             onClick={() => track('hero_review_cta_click', { source: 'hero' })}
           >
-            Book a Kafka Replay Safety Review
+            Book a Recovery Workflow Review
           </a>
-          <a className="button secondary" href="#demo">Watch the 3-Minute Workflow</a>
+          <a className="button secondary" href="#operations">Explore Recovery Operations</a>
         </div>
         <div className="trust-row" aria-label="Platform highlights">
           <span>Self-hosted</span>
-          <span>Customer-controlled Kafka access</span>
-          <span>RBAC</span>
-          <span>Audit history</span>
-          <span>Rate-limited execution</span>
+          <span>Policy-enforced scope</span>
+          <span>Maker-checker approval</span>
+          <span>Agent-ready APIs</span>
+          <span>Recovery evidence</span>
         </div>
       </div>
       <ProductPreview />
@@ -148,8 +156,8 @@ function DiagnosticQuestions() {
   return (
     <section id="problem" className="section diagnostic-section">
       <div className="section-heading">
-        <p className="eyebrow">How controlled is your current replay process?</p>
-        <h2>Can your team answer these questions before a replay begins?</h2>
+        <p className="eyebrow">Recovery under pressure</p>
+        <h2>Can your team answer these questions before production state changes?</h2>
       </div>
       <div className="question-grid">
         {diagnosticQuestions.map((question, index) => (
@@ -160,8 +168,33 @@ function DiagnosticQuestions() {
         ))}
       </div>
       <p className="closing-statement">
-        If these answers depend on the engineer running the script, the workflow is not yet standardized.
+        If these answers depend on the individual running a command, recovery is relying on judgement instead of an enforceable control plane.
       </p>
+    </section>
+  );
+}
+
+function RecoveryOperations() {
+  return (
+    <section id="operations" className="section recovery-operations-section">
+      <div className="section-heading wide">
+        <p className="eyebrow">One control plane, four recovery paths</p>
+        <h2>Move from replay tooling to governed Kafka recovery</h2>
+        <p>
+          Operators use a consistent preview, policy, approval and evidence model across the
+          recovery actions that otherwise live in separate scripts, runbooks and command-line tools.
+        </p>
+      </div>
+      <div className="recovery-operation-grid">
+        {recoveryOperations.map((operation) => (
+          <article className="recovery-operation-card" key={operation.title}>
+            <span>{operation.code}</span>
+            <h3>{operation.title}</h3>
+            <p>{operation.text}</p>
+            <small>{operation.detail}</small>
+          </article>
+        ))}
+      </div>
     </section>
   );
 }
@@ -173,22 +206,25 @@ function DemoVideoSection() {
   return (
     <section id="demo" className="section demo-video-section">
       <div className="section-heading">
-        <p className="eyebrow">See the workflow</p>
-        <h2>From selected offsets to controlled execution</h2>
+        <p className="eyebrow">Governed recovery walkthrough</p>
+        <h2>See ReplayGuard govern Kafka recovery from proposal to evidence</h2>
         <p>
-          See how an operator inspects Kafka records, creates a replay request, reviews validation,
-          monitors execution and uses pause, resume or stop controls.
+          Follow a complete recovery workflow: inspect Kafka state, resolve the exact scope, apply
+          policy guardrails and independent approval, execute with runtime controls, then review
+          verification and immutable evidence.
         </p>
       </div>
       <div className="video-frame">
         <video
+          aria-label="ReplayGuard governed Kafka recovery demo"
           controls
+          playsInline
           preload="metadata"
           poster={posterPath}
           onPlay={() => track('demo_video_play')}
         >
           <source src={videoPath} type="video/mp4" />
-          <a href={videoPath}>Download the ReplayGuard workflow video.</a>
+          <a href={videoPath}>Download the ReplayGuard governed recovery demo.</a>
         </video>
       </div>
       <div className="workflow-tags" aria-label="Demo workflow stages">
@@ -202,7 +238,8 @@ function ReplayComparison() {
   return (
     <section className="section comparison-section">
       <div className="section-heading wide">
-        <h2>A replay script moves messages. A replay workflow controls the operation.</h2>
+        <p className="eyebrow">Operational difference</p>
+        <h2>A recovery command changes Kafka state. A control plane governs the decision.</h2>
       </div>
       <div className="comparison-table" role="table" aria-label="Manual replay versus controlled replay">
         <div className="comparison-row comparison-head" role="row">
@@ -219,8 +256,8 @@ function ReplayComparison() {
         ))}
       </div>
       <p className="section-note">
-        Well-engineered internal scripts can be effective. ReplayGuard focuses on standardizing the
-        safety, governance and visibility surrounding replay operations.
+        Well-engineered internal tools remain useful. ReplayGuard standardizes the policy, approval,
+        execution and evidence surrounding production recovery without replacing Kafka itself.
       </p>
     </section>
   );
@@ -228,13 +265,13 @@ function ReplayComparison() {
 
 function ReplayWorkflow() {
   return (
-    <section id="workflow" className="section workflow-section">
+    <section id="governance" className="section workflow-section">
       <div className="section-heading">
-        <p className="eyebrow">ReplayGuard workflow</p>
-        <h2>A controlled Kafka replay workflow</h2>
+        <p className="eyebrow">Governance before execution</p>
+        <h2>Every recovery follows a reviewable control chain</h2>
       </div>
       <div className="workflow-grid">
-        {workflowSteps.map(([title, text], index) => (
+        {governanceSteps.map(([title, text], index) => (
           <article className="workflow-card" key={title}>
             <span>{String(index + 1).padStart(2, '0')}</span>
             <h3>{title}</h3>
@@ -246,12 +283,57 @@ function ReplayWorkflow() {
   );
 }
 
+function AutomationSection() {
+  return (
+    <section className="section automation-section">
+      <div className="automation-layout">
+        <div className="section-heading">
+          <p className="eyebrow">Automation without bypassing control</p>
+          <h2>Let incident agents propose recovery, not silently approve themselves</h2>
+          <p>
+            Service accounts give incident agents, runbooks and internal automation a narrow machine
+            identity. They can validate scope and submit governed proposals while human approval remains
+            in force wherever policy requires it.
+          </p>
+        </div>
+        <div className="automation-control-list">
+          {automationControls.map(([title, text]) => (
+            <article key={title}>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SameTopicSection() {
+  return (
+    <section className="section same-topic-section">
+      <div className="same-topic-copy">
+        <p className="eyebrow">Guarded same-topic replay</p>
+        <h2>Support the high-risk route without normalizing unsafe execution</h2>
+        <p>
+          Replaying back into the source topic can be operationally necessary, but it can also create
+          feedback loops and duplicate previously replayed records. ReplayGuard treats it as a distinct,
+          approval-gated path rather than a normal destination choice.
+        </p>
+      </div>
+      <ul className="safeguard-list">
+        {sameTopicSafeguards.map((item) => <li key={item}>{item}</li>)}
+      </ul>
+    </section>
+  );
+}
+
 function OperationalImpact() {
   return (
     <section className="section impact-section">
       <div className="section-heading">
         <p className="eyebrow">Operational impact</p>
-        <h2>Reduce the engineering effort and risk surrounding replay incidents</h2>
+        <h2>Reduce the coordination cost and uncertainty surrounding Kafka recovery</h2>
       </div>
       <div className="impact-grid">
         {operationalImpact.map(([title, text]) => (
@@ -270,7 +352,7 @@ function ProductCapabilities() {
     <section id="product" className="section capability-section">
       <div className="section-heading">
         <p className="eyebrow">Product capabilities</p>
-        <h2>Purpose-built for replay preparation, execution control and auditability</h2>
+        <h2>Purpose-built for recovery scope, governance, execution and evidence</h2>
       </div>
       <div className="capability-grid">
         {capabilityGroups.map((group) => (
@@ -296,10 +378,11 @@ function ProductScreenshots({
     <section id="screenshots" className="section screenshots-section">
       <div className="section-heading">
         <p className="eyebrow">Product proof</p>
-        <h2>See the core ReplayGuard workflows</h2>
+        <h2>See the operational foundation</h2>
         <p>
-          These sanitized demo screenshots show the views teams use to inspect Kafka topics,
-          create replay requests, monitor execution and review operational history.
+          These sanitized product views show the established replay and inspection workflow. The
+          governed recovery interface extends the same visual model to policies, approvals, recovery
+          operations and service accounts.
         </p>
       </div>
       <div className="screenshot-grid">
@@ -346,15 +429,15 @@ function DeploymentArchitecture() {
     <section id="deployment" className="section deployment-section">
       <div className="section-heading">
         <p className="eyebrow">Self-hosted deployment</p>
-        <h2>ReplayGuard runs where your Kafka runs</h2>
+        <h2>Run the recovery control plane inside your environment</h2>
         <p>
-          Deploy ReplayGuard inside your infrastructure using private container images. Your environment
-          controls Kafka connectivity, network access, PostgreSQL, Redis and the public application endpoint.
+          Deploy ReplayGuard using Docker Compose or Kubernetes with Helm. Your environment controls
+          Kafka connectivity, network access, PostgreSQL and the application endpoint.
         </p>
       </div>
       <div className="architecture-card" aria-label="ReplayGuard self-hosted deployment architecture">
         <div className="arch-flow">
-          {['Engineering users', 'replayguard.company.com', 'Customer reverse proxy', 'ReplayGuard frontend + API', 'ReplayGuard replay worker', 'Customer Kafka clusters'].map((node, index, list) => (
+          {['Engineers + incident agents', 'Customer HTTPS endpoint', 'ReplayGuard UI + governed API', 'Policy + approval control plane', 'Replay workers', 'Customer Kafka clusters'].map((node, index, list) => (
             <div className="arch-node-wrap" key={node}>
               <div className="arch-node">{node}</div>
               {index < list.length - 1 && <span className="arch-arrow" aria-hidden="true">-&gt;</span>}
@@ -362,8 +445,8 @@ function DeploymentArchitecture() {
           ))}
         </div>
         <div className="arch-side-grid">
-          <div><strong>ReplayGuard metadata</strong><span>Customer PostgreSQL</span></div>
-          <div><strong>Runtime coordination</strong><span>Customer Redis</span></div>
+          <div><strong>State and coordination</strong><span>Customer PostgreSQL</span></div>
+          <div><strong>Deployment choices</strong><span>Docker Compose or Kubernetes + Helm</span></div>
           <div><strong>Subscription activation</strong><span>Signed customer licence key</span></div>
         </div>
       </div>
@@ -379,10 +462,10 @@ function AudienceFit() {
     <section className="section fit-section">
       <div className="section-heading">
         <p className="eyebrow">Qualification</p>
-        <h2>Built for teams that treat replay as a production operation</h2>
+        <h2>Built for teams that treat recovery as a production operation</h2>
         <p>
-          ReplayGuard is most relevant when your team uses Kafka in production, occasionally performs
-          selective reprocessing and needs stronger repeatability, control or auditability than scripts provide.
+          ReplayGuard is most relevant when reprocessing, redrive and offset changes require stronger
+          repeatability, separation of duties and evidence than scripts and tickets provide.
         </p>
       </div>
       <div className="fit-grid">
@@ -404,7 +487,7 @@ function EvaluationProcess() {
     <section id="evaluation" className="section evaluation-section">
       <div className="section-heading">
         <p className="eyebrow">Technical evaluation process</p>
-        <h2>Evaluate ReplayGuard against one real replay workflow</h2>
+        <h2>Evaluate ReplayGuard against one real recovery runbook</h2>
       </div>
       <div className="evaluation-layout">
         <div className="evaluation-steps">
@@ -439,7 +522,7 @@ function PositioningComparison() {
     <section className="section positioning-section">
       <div className="section-heading">
         <p className="eyebrow">Where ReplayGuard fits</p>
-        <h2>Focused on replay governance, not replacing your Kafka platform</h2>
+        <h2>A recovery control plane, not another Kafka platform</h2>
       </div>
       <div className="fit-comparison-grid">
         {fitComparisons.map(([name, strength, limitation]) => (
@@ -459,11 +542,11 @@ function AboutReplayGuard() {
     <section className="section about-section">
       <div className="section-heading">
         <p className="eyebrow">About ReplayGuard</p>
-        <h2>Focused infrastructure software for safer Kafka replay</h2>
+        <h2>Focused infrastructure software for governed Kafka recovery</h2>
         <p>
-          ReplayGuard is an independently built infrastructure product focused on safer Kafka replay
-          and incident debugging. Product walkthroughs, technical evaluations and early customer
-          onboarding are handled directly by the founder.
+          ReplayGuard is an independently built infrastructure product focused on safer recovery and
+          incident operations around Kafka. Product walkthroughs, technical evaluations and early
+          customer onboarding are handled directly by the founder.
         </p>
       </div>
       <div className="about-grid">
@@ -505,11 +588,11 @@ function LeadCaptureSection() {
   return (
     <section id="request-review" className="section lead-section">
       <div className="section-heading">
-        <p className="eyebrow">Replay Safety Review</p>
-        <h2>Discuss your current Kafka replay workflow</h2>
+        <p className="eyebrow">Recovery Workflow Review</p>
+        <h2>Discuss your current Kafka recovery runbook</h2>
         <p>
-          Share the replay process you use today. The first call focuses on workflow risk, technical fit
-          and whether a self-hosted evaluation is appropriate.
+          Share one replay, DLQ, timestamp or offset-reset process you use today. The first call focuses
+          on workflow risk, governance gaps and whether a self-hosted evaluation is appropriate.
         </p>
       </div>
       <LeadCaptureForm />
@@ -521,10 +604,10 @@ function FinalCTA() {
   return (
     <section className="section final-cta">
       <div>
-        <h2>Make Kafka replay a controlled operational workflow</h2>
+        <h2>Make Kafka recovery a governed operational workflow</h2>
         <p>
-          Review your current replay process, identify safety and auditability gaps,
-          and evaluate ReplayGuard against one defined Kafka replay scenario.
+          Review one current runbook, identify policy and evidence gaps, and evaluate ReplayGuard
+          against a defined recovery scenario inside your environment.
         </p>
         <p className="supporting-line">
           20-minute technical discussion · No installation required for the first call · Self-hosted evaluation available
@@ -536,9 +619,9 @@ function FinalCTA() {
           href="#request-review"
           onClick={() => track('hero_review_cta_click', { source: 'final_cta' })}
         >
-          Book a Replay Safety Review
+          Book a Recovery Workflow Review
         </a>
-        <a className="button secondary" href="#demo">Watch the Workflow</a>
+        <a className="button secondary" href="#demo">Watch the Core Workflow</a>
       </div>
     </section>
   );
@@ -546,12 +629,12 @@ function FinalCTA() {
 
 function ProductPreview() {
   return (
-    <div className="product-preview" aria-label="ReplayGuard replay workflow preview">
+    <div className="product-preview" aria-label="ReplayGuard governed recovery preview">
       <div className="preview-top">
         <span className="dot active" />
         <span className="dot" />
         <span className="dot" />
-        <strong>Controlled replay workflow</strong>
+        <strong>Governed recovery operation</strong>
       </div>
       <div className="preview-grid">
         <aside>
@@ -562,12 +645,12 @@ function ProductPreview() {
         </aside>
         <div className="preview-main">
           <div className="preview-stat-row">
-            <div><span>Validation</span><strong>Passed</strong></div>
-            <div><span>Rate</span><strong>Bounded</strong></div>
-            <div><span>Audit</span><strong>Ready</strong></div>
+            <div><span>Policy</span><strong>Allowed</strong></div>
+            <div><span>Approval</span><strong>Verified</strong></div>
+            <div><span>Evidence</span><strong>Ready</strong></div>
           </div>
           <div className="preview-table">
-            {['INSPECT', 'VALIDATE', 'EXECUTE', 'AUDIT'].map((status) => (
+            {['PREVIEW', 'FINGERPRINT', 'APPROVE', 'EXECUTE'].map((status) => (
               <div className="preview-row" key={status}>
                 <span className="pill running">{status}</span>
                 <span className="route-line" />
@@ -660,11 +743,11 @@ function Footer() {
     <footer className="footer">
       <div className="footer-brand">
         <BrandLogo />
-        <p>Self-hosted Kafka replay control plane for controlled replay operations.</p>
+        <p>Self-hosted control plane for governed Kafka recovery operations.</p>
       </div>
       <div className="footer-links" aria-label="Footer navigation">
         <a href="#product">Product</a>
-        <a href="#workflow">Workflow</a>
+        <a href="#governance">Governance</a>
         <a href="#/security">Security</a>
         <a href="#deployment">Deployment</a>
         <a href="#evaluation">Evaluation</a>

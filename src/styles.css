@@ -420,6 +420,45 @@ h3 {
   background: #fff;
 }
 
+.recovery-operations-section {
+  background: #eef5f3;
+}
+
+.recovery-operation-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.recovery-operation-card {
+  min-height: 270px;
+  border: 1px solid #cbdde2;
+  border-radius: 8px;
+  background: #fff;
+  padding: 22px;
+  box-shadow: 0 12px 28px rgb(30 52 63 / 7%);
+}
+
+.recovery-operation-card > span {
+  display: inline-flex;
+  margin-bottom: 36px;
+  color: var(--green-dark);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.recovery-operation-card p {
+  margin-bottom: 18px;
+}
+
+.recovery-operation-card small {
+  display: block;
+  border-top: 1px solid var(--line);
+  color: #405460;
+  font-weight: 700;
+  padding-top: 16px;
+}
+
 .question-grid,
 .workflow-grid,
 .impact-grid,
@@ -567,7 +606,90 @@ h3 {
 }
 
 .workflow-grid {
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.automation-section {
+  background: #fff;
+}
+
+.automation-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: start;
+}
+
+.automation-layout .section-heading {
+  position: sticky;
+  top: 112px;
+  margin-bottom: 0;
+}
+
+.automation-control-list {
+  display: grid;
+  border-top: 1px solid var(--line);
+}
+
+.automation-control-list article {
+  display: grid;
+  grid-template-columns: minmax(170px, 0.45fr) minmax(0, 1fr);
+  gap: 20px;
+  border-bottom: 1px solid var(--line);
+  padding: 22px 0;
+}
+
+.automation-control-list h3,
+.automation-control-list p {
+  margin: 0;
+}
+
+.same-topic-section {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: center;
+  background: #10202a;
+}
+
+.same-topic-copy h2,
+.same-topic-copy p {
+  color: #fff;
+}
+
+.safeguard-list {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid #284451;
+  border-radius: 8px;
+  background: #284451;
+  padding: 0;
+  list-style: none;
+}
+
+.safeguard-list li {
+  position: relative;
+  background: #132632;
+  color: #fff;
+  font-weight: 750;
+  padding: 17px 18px 17px 50px;
+}
+
+.safeguard-list li::before {
+  position: absolute;
+  top: 17px;
+  left: 18px;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #88d3c4;
+  border-radius: 50%;
+  color: #88d3c4;
+  content: "\2713";
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
 }
 
 .impact-grid,
@@ -1041,11 +1163,21 @@ h3 {
     grid-template-columns: 1fr;
   }
 
+  .automation-layout,
+  .same-topic-section {
+    grid-template-columns: 1fr;
+  }
+
+  .automation-layout .section-heading {
+    position: static;
+  }
+
   .product-preview {
     max-width: 920px;
   }
 
   .workflow-grid,
+  .recovery-operation-grid,
   .capability-grid,
   .callout-grid,
   .fit-comparison-grid {
@@ -1087,6 +1219,11 @@ h3 {
   .lead-form,
   .footer {
     grid-template-columns: 1fr;
+  }
+
+  .automation-control-list article {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
 
   .comparison-table {
