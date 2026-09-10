@@ -2,7 +2,7 @@ export const site = {
   canonicalUrl: 'https://replayguard.in',
   productName: 'ReplayGuard',
   productVersion: 'Governed recovery release',
-  lastUpdated: 'August 2026',
+  lastUpdated: 'September 2026',
   founderName: 'Ravitheja',
   linkedinUrl: 'https://www.linkedin.com/',
   reviewCta: 'Book a Recovery Workflow Review',
@@ -41,13 +41,13 @@ export const recoveryOperations = [
     code: '03',
     title: 'DLQ redrive',
     text: 'Redrive failed records to an explicit destination or safely route them using original-topic metadata headers.',
-    detail: 'Supports optional original-partition routing, bounded ranges and production verification.',
+    detail: 'Review invalid metadata and routing before execution. Each operation targets one resolved destination topic.',
   },
   {
     code: '04',
     title: 'Consumer-group offset reset',
     text: 'Preview and apply earliest, latest, timestamp, absolute, relative or per-partition offset changes.',
-    detail: 'Detects active groups and rejects stale approved state before changing committed offsets.',
+    detail: 'Review group activity and approved state. Reconcile uncertain outcomes without blindly applying another reset.',
   },
 ];
 
@@ -55,7 +55,7 @@ export const replayComparison = [
   ['Scope', 'Topics and offsets assembled by an operator', 'Structured requested scope plus resolved Kafka scope'],
   ['Policy', 'Runbook guidance or reviewer memory', 'Enforced topic, group, volume, rate and movement limits'],
   ['Approval', 'Chat, ticket or verbal confirmation', 'Maker-checker approval with an expiry window'],
-  ['Change detection', 'Operator rechecks manually', 'Approved fingerprint is compared before execution'],
+  ['Change detection', 'Operator rechecks manually', 'Approved recovery scope is checked before execution'],
   ['Automation', 'Broad credentials embedded in scripts', 'Scoped, expiring service accounts and idempotent APIs'],
   ['Runtime control', 'Depends on custom script behavior', 'Rate limits, progress, pause, resume, stop and cancel'],
   ['Verification', 'Manual destination checks', 'Kafka production or recorded manual verification where applicable'],
@@ -65,9 +65,9 @@ export const replayComparison = [
 export const governanceSteps = [
   ['Define policy', 'Assign permitted operations, topic and group patterns, limits and approval rules to a Kafka profile.'],
   ['Preview scope', 'Resolve Kafka metadata into a concrete, reviewable recovery scope before execution.'],
-  ['Fingerprint', 'Hash the canonical requested and resolved scope so later changes can be detected.'],
+  ['Dry run', 'Read the selected records without publishing to the destination and review the result.'],
   ['Approve', 'Require an independent checker when the assigned policy marks the operation as approval-gated.'],
-  ['Execute', 'A worker claims eligible jobs, enforces rate and lifecycle controls, and checkpoints progress.'],
+  ['Execute', 'Recover at the approved rate with visible progress, pause and stop controls.'],
   ['Verify and evidence', 'Record production or manual verification and export a focused recovery evidence record.'],
 ];
 
@@ -80,15 +80,15 @@ export const operationalImpact = [
 export const capabilityGroups = [
   {
     title: 'Inspect and resolve',
-    items: ['Reusable secured Kafka profiles', 'Topic, partition, offset and timestamp inspection', 'Bounded message previews', 'Multi-partition range selection', 'Timestamp-to-offset resolution'],
+    items: ['Reusable secured Kafka profiles', 'Topic, partition, offset and timestamp inspection', 'Bounded message previews', 'Consumer-group membership and lag context', 'Multi-partition range selection'],
   },
   {
     title: 'Govern recovery',
-    items: ['Profile-assigned recovery policies', 'Topic and consumer-group allow patterns', 'Volume, rate and offset-movement limits', 'Maker-checker approvals and validity windows', 'Canonical request fingerprints'],
+    items: ['Profile-assigned recovery policies', 'Topic and consumer-group allow patterns', 'Volume, rate and offset-movement limits', 'Maker-checker approvals and validity windows', 'Reviewable source and destination scope'],
   },
   {
     title: 'Execute and control',
-    items: ['Dry-run and replay modes', 'Worker leases, recovery and checkpoints', 'Pause, resume, stop and cancel', 'Scheduled starts and execution windows', 'Kafka transactional producing where supported'],
+    items: ['Dry-run and replay modes', 'Eligible retry and rerun workflows', 'Pause, resume and stop controls', 'Scheduled starts and execution windows', 'Kafka transactional and non-transactional replay'],
   },
   {
     title: 'Automate and prove',
@@ -98,7 +98,7 @@ export const capabilityGroups = [
 
 export const automationControls = [
   ['Least-privilege identity', 'Admins issue an expiring service account with only the proposal, read or runtime-control scopes the integration needs.'],
-  ['One-time secret delivery', 'The plaintext token is shown once. ReplayGuard stores its cryptographic hash, plus expiry, revocation and last-used metadata.'],
+  ['Protected integration access', 'Tokens are shown once, can expire and can be revoked. Keep them in an approved secret manager.'],
   ['Human governance remains', 'Incident agents and runbooks can validate and propose recovery. Policy-required approval is still performed by an authorized human checker.'],
   ['Repeat-safe requests', 'Idempotency keys prevent a retried integration call from silently creating duplicate operations.'],
 ];
@@ -132,14 +132,14 @@ export const safetyGroups = [
   },
   {
     title: 'Execution safeguards',
-    items: ['Policy evaluation before execution', 'Frozen and fingerprinted recovery scope', 'Rate, volume and offset-movement limits', 'Active consumer-group protection', 'Stale approved-state rejection', 'Guarded same-topic replay'],
+    items: ['Policy evaluation before execution', 'Bounded, approved recovery scope', 'Rate, volume and offset-movement limits', 'Active consumer-group protection', 'Review of uncertain offset-reset outcomes', 'Guarded same-topic replay'],
   },
 ];
 
 export const deploymentCallouts = [
-  'Kafka records remain in the customer-controlled environment.',
+  'Deploy within your approved data boundary, including authorized browsers and integrations.',
   'Docker Compose and Kubernetes with Helm are supported deployment paths.',
-  'PostgreSQL stores control-plane state, audit history and coordination buckets.',
+  'Your team controls application access, credentials and recovery permissions.',
   'ReplayGuard does not require vendor access to customer Kafka brokers.',
   'Signed licences and private container delivery support self-hosted operation.',
 ];
@@ -172,9 +172,11 @@ export const faqs = [
   ['Is ReplayGuard a hosted SaaS product?', 'No. ReplayGuard runs inside customer-controlled infrastructure. Customers control Kafka connectivity, PostgreSQL, networking, deployment access and application users.'],
   ['Can ReplayGuard replay records back into the same topic?', 'Yes, through a guarded workflow. The route must be allowed by policy, the requester must acknowledge the risk, a matching dry run is required, and the replay requires independent approval. Source ranges are frozen and records previously produced by ReplayGuard are skipped unless explicitly included.'],
   ['Can incident agents or runbooks create recoveries?', 'Authorized integrations can use scoped service accounts to validate requests and submit proposals. Tokens expire and can be revoked. Policy-required approval remains a human action, so automation does not receive unrestricted production recovery access.'],
-  ['What delivery guarantees does ReplayGuard support?', 'ReplayGuard supports at-least-once processing and Kafka transactional producing where the selected Kafka route supports transactions. Kafka transactions prevent partial visibility within a committed Kafka transaction. Kafka production and PostgreSQL checkpointing are separate systems, so a crash after Kafka commit but before checkpoint persistence can replay a small range. Downstream consumers should remain idempotent.'],
-  ['Does ReplayGuard store Kafka message payloads?', 'ReplayGuard stores operation configuration, resolved scope, approvals, progress checkpoints, verification and audit metadata. Kafka message payloads are not written to audit or application logs. Topic Explorer displays bounded previews retrieved from the customer Kafka environment.'],
-  ['How is an approved recovery protected from later changes?', 'ReplayGuard canonicalizes and fingerprints the requested and resolved scope. Before execution it checks the approved state again. Consumer-group resets also compare current committed offsets with the approved before-state and reject stale proposals.'],
+  ['Which replay modes are available?', 'ReplayGuard supports Kafka transactional replay on eligible routes and Kafka non-transactional replay. Review route compatibility before execution. Repeated delivery can occur during recovery; neither mode guarantees exactly-once downstream business processing. Applications should handle repeated events safely.'],
+  ['How should teams protect recovery data?', 'Deploy within your approved environment and restrict application access. Topic Explorer can display selected Kafka records to authorized users. Protect browser access, exports and connected automation under your data-handling policies; do not submit sensitive payloads through this public website.'],
+  ['How is an approved recovery protected from later changes?', 'The approved scope is reviewed again before execution. Changed conditions can require a fresh proposal. Operators should review warnings and blockers rather than assuming an earlier preview remains valid indefinitely.'],
+  ['Can historical events be recovered after live Kafka retention expires?', 'When the historical events are available through Streambased K.S.I., engineers can validate the source ranges and use ReplayGuard to recover them into an approved Kafka destination. Historical availability and coordinate mapping must be confirmed; ReplayGuard does not create missing archive data.'],
+  ['What does recovery verification confirm?', 'ReplayGuard presents recorded production and completion evidence. This is not an independent destination inspection or proof of application correctness. The application owner should inspect the recovered records and validate business outcomes.'],
   ['How is ReplayGuard deployed?', 'ReplayGuard is delivered through private container images and a signed subscription licence. Customers can deploy with Docker Compose or Kubernetes using the provided Helm chart, then configure Kafka and PostgreSQL inside their environment.'],
   ['Does ReplayGuard replace existing Kafka platforms?', 'No. ReplayGuard is a focused recovery control plane that complements Kafka infrastructure, observability and administration tools.'],
   ['Can ReplayGuard connect to secured Kafka clusters?', 'ReplayGuard supports common Kafka security configurations including SSL, SASL_PLAINTEXT, SASL_SSL, PLAIN, SCRAM-SHA-256 and SCRAM-SHA-512, subject to customer configuration and environment compatibility.'],

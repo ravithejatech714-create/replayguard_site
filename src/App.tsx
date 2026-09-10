@@ -68,6 +68,7 @@ function Header() {
         <a href="#problem">Problem</a>
         <a href="#operations">Operations</a>
         <a href="#governance">Governance</a>
+        <a href="#partners">Partners</a>
         <a href="#product">Product</a>
         <a href="#security">Security</a>
         <a href="#deployment">Deployment</a>
@@ -98,6 +99,7 @@ function MarketingPage({
       <DiagnosticQuestions />
       <RecoveryOperations />
       <DemoVideoSection />
+      <TechnologyPartners />
       <ReplayComparison />
       <ReplayWorkflow />
       <AutomationSection />
@@ -148,6 +150,50 @@ function HeroSection() {
         </div>
       </div>
       <ProductPreview />
+    </section>
+  );
+}
+
+function TechnologyPartners() {
+  return (
+    <section id="partners" className="section partnership-section" aria-labelledby="partnership-title">
+      <div className="section-heading">
+        <p className="eyebrow">Technology partners</p>
+        <h2 id="partnership-title">Streambased + ReplayGuard</h2>
+        <p>Historical event access meets governed Kafka recovery. Streambased is our first technology partner.</p>
+      </div>
+      <div className="partnership-identity">
+        <div className="brand"><BrandLogo /></div>
+        <span className="partnership-plus" aria-hidden="true">+</span>
+        <img className="streambased-logo" src="/assets/RGB%20Streambased%20Logos-02.svg"
+          alt="Streambased" width="941" height="230" loading="lazy" />
+        <a className="text-link" href="https://streambased.io/" target="_blank" rel="noopener noreferrer">Visit Streambased <span aria-hidden="true">&#8599;</span></a>
+      </div>
+      <div className="partnership-story">
+        <div>
+          <p className="eyebrow">The joint use case</p>
+          <h3>Recover events beyond live Kafka retention</h3>
+          <p>A production bug has been fixed, but the events that need reprocessing are no longer in live Kafka.
+            When those events remain available in Iceberg, Streambased K.S.I. provides access through the Kafka protocol.
+            ReplayGuard brings the selected events back into an approved Kafka destination through a governed recovery workflow.</p>
+        </div>
+        <div className="partnership-example">
+          <p className="eyebrow">Example incident</p>
+          <h3>Reprocess events affected by version 2.4.7</h3>
+          <p>An engineer identifies the affected historical events, confirms their K.S.I. partition and offset ranges,
+            and proposes a bounded recovery. After a dry run and required approval, ReplayGuard replays them at an agreed rate.
+            The application owner checks the corrected processing outcome.</p>
+        </div>
+      </div>
+      <ol className="partnership-flow" aria-label="Joint recovery workflow">
+        <li><span className="eyebrow">01 / Identify</span><h3>Find historical events</h3><p>Use historical data to identify the affected selection and confirm availability through Streambased K.S.I.</p></li>
+        <li><span className="eyebrow">02 / Govern</span><h3>Review the recovery</h3><p>Preview the ranges in ReplayGuard, complete a dry run and obtain policy-required approval.</p></li>
+        <li><span className="eyebrow">03 / Recover</span><h3>Replay with control</h3><p>Recover into the approved Kafka topic with rate limits, operational controls and recovery evidence.</p></li>
+        <li><span className="eyebrow">04 / Validate</span><h3>Confirm the outcome</h3><p>Inspect the destination and validate the downstream application result before closing the incident.</p></li>
+      </ol>
+      <p className="partnership-boundary">Streambased provides historical access; ReplayGuard governs recovery.
+        Historical availability and offset mapping must be confirmed. Replay does not repair invalid payloads or guarantee a correct business outcome.</p>
+      <a className="button primary" href="#request-review" onClick={() => track('hero_review_cta_click', { source: 'streambased_partnership' })}>Discuss the Joint Use Case</a>
     </section>
   );
 }
@@ -432,12 +478,12 @@ function DeploymentArchitecture() {
         <h2>Run the recovery control plane inside your environment</h2>
         <p>
           Deploy ReplayGuard using Docker Compose or Kubernetes with Helm. Your environment controls
-          Kafka connectivity, network access, PostgreSQL and the application endpoint.
+          Kafka connectivity, network access, credentials and the application endpoint.
         </p>
       </div>
-      <div className="architecture-card" aria-label="ReplayGuard self-hosted deployment architecture">
+      <div className="deployment-options" aria-label="Customer deployment choices">
         <div className="arch-flow">
-          {['Engineers + incident agents', 'Customer HTTPS endpoint', 'ReplayGuard UI + governed API', 'Policy + approval control plane', 'Replay workers', 'Customer Kafka clusters'].map((node, index, list) => (
+          {['Your selected events', 'Your approved recovery', 'Your Kafka destination'].map((node, index, list) => (
             <div className="arch-node-wrap" key={node}>
               <div className="arch-node">{node}</div>
               {index < list.length - 1 && <span className="arch-arrow" aria-hidden="true">-&gt;</span>}
@@ -445,7 +491,7 @@ function DeploymentArchitecture() {
           ))}
         </div>
         <div className="arch-side-grid">
-          <div><strong>State and coordination</strong><span>Customer PostgreSQL</span></div>
+          <div><strong>Customer-controlled access</strong><span>Your users, credentials and network policies</span></div>
           <div><strong>Deployment choices</strong><span>Docker Compose or Kubernetes + Helm</span></div>
           <div><strong>Subscription activation</strong><span>Signed customer licence key</span></div>
         </div>
@@ -650,7 +696,7 @@ function ProductPreview() {
             <div><span>Evidence</span><strong>Ready</strong></div>
           </div>
           <div className="preview-table">
-            {['PREVIEW', 'FINGERPRINT', 'APPROVE', 'EXECUTE'].map((status) => (
+            {['PREVIEW', 'DRY RUN', 'APPROVE', 'EXECUTE'].map((status) => (
               <div className="preview-row" key={status}>
                 <span className="pill running">{status}</span>
                 <span className="route-line" />
