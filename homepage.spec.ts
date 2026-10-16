@@ -78,7 +78,7 @@ test("responsive product media, operation choices and reduced motion", async ({
     ).toBe(true);
   }
   expect(errors).toEqual([]);
-  await expect(page.locator("video")).toHaveCount(0);
+  await expect(page.locator("video")).toHaveAttribute("preload", "none");
 });
 
 test("unconfigured form gives a real contact path instead of false success", async ({

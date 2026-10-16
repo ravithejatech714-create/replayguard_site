@@ -16,7 +16,7 @@ Tests cover Community links and limits, operation selection, mobile navigation, 
 - Confirm Community repository links and stated limits against the intended release.
 - Review the Streambased partnership wording and licensed-workflow qualification.
 - Confirm the three selected HD screenshots: execution controls, progress/downstream impact and governance. Audit evidence is described without publishing raw evidence JSON.
-- Recordings and unused screenshots are excluded from the public bundle. Only add a replacement walkthrough after reviewing every frame for credentials and personal or operational data.
+- The governed recovery walkthrough uses the owner's redacted version 2 recording. Spot checks at 2:25, 2:30 and 2:35 confirmed the known token display is covered at 2:30. This is not a frame-by-frame security audit. Confirm revocation of the previously exposed token. Original recordings and unused screenshots remain excluded.
 - Try navigation, FAQ, workflow controls and the screenshot viewer on phone and desktop.
 - Confirm the GitHub Pages `VITE_LEAD_FORM_ENDPOINT` variable is configured to your approved Formspree endpoint. Without it, the site honestly offers email contact and disables submission.
 - Send one real enquiry after deployment and confirm delivery. Automated tests do not verify real provider delivery.

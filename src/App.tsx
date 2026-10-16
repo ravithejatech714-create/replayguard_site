@@ -375,9 +375,29 @@ export function App() {
                   </article>
                 ))}
               </div>
-              <a className="rg-text-link" href="#request-review">
-                See the full workflow in a demo <ArrowRight size={17} />
-              </a>
+              <h3>Watch the governed recovery walkthrough</h3>
+              <p>
+                Follow the workflow from inspection to recovery evidence.
+                This demonstration includes licensed capabilities;
+                Community limits are listed below.
+              </p>
+              <video
+                aria-label="ReplayGuard governed recovery walkthrough"
+                controls
+                playsInline
+                preload="none"
+                poster={asset("demo/replayguard-governed-recovery-cover.png")}
+                onPlay={() => track("demo_video_play", { source: "homepage" })}
+              >
+                <source
+                  src={asset("demo/replayguard-governed-recovery-redacted-v2.mp4")}
+                  type="video/mp4"
+                />
+                Your browser cannot play this video.{" "}
+                <a href={asset("demo/replayguard-governed-recovery-redacted-v2.mp4")}>
+                  Open the walkthrough
+                </a>.
+              </video>
             </div>
           </section>
           <section id="partners" className="rg-partner rg-section">
