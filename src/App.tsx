@@ -375,8 +375,8 @@ export function App() {
                   </article>
                 ))}
               </div>
-              <h3>Watch the governed recovery walkthrough</h3>
-              <p>
+              <h3 className="rg-demo-heading">Watch the governed recovery walkthrough</h3>
+              <p className="rg-demo-description">
                 Follow the workflow from inspection to recovery evidence.
                 This demonstration includes licensed capabilities;
                 Community limits are listed below.
