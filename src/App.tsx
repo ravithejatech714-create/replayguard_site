@@ -1,814 +1,907 @@
-import { useEffect, useState } from 'react';
-import { track } from './analytics';
-import { BrandLogo } from './BrandLogo';
-import { LeadCaptureForm } from './LeadCaptureForm';
+import { useEffect, useRef, useState } from "react";
 import {
-  automationControls,
-  audienceFit,
-  capabilityGroups,
-  demoVideo,
-  deploymentCallouts,
-  diagnosticQuestions,
-  evaluationSteps,
-  faqs,
-  fitComparisons,
-  legalPages,
-  operationalImpact,
-  governanceSteps,
-  recoveryOperations,
-  replayComparison,
-  sameTopicSafeguards,
-  safetyGroups,
-  screenshots,
-  site,
-  successCriteria,
-} from './data/content';
+  ArrowRight,
+  ArrowUpRight,
+  Check,
+  Menu,
+  X,
+  ShieldCheck,
+  ScanSearch,
+  SlidersHorizontal,
+  FileCheck2,
+  ZoomIn,
+  Gauge,
+  FlaskConical,
+  Activity,
+  ChevronDown,
+} from "lucide-react";
+import { BrandLogo } from "./BrandLogo";
+import { LeadCaptureForm } from "./LeadCaptureForm";
+import { legalPages } from "./data/content";
+import { track } from "./analytics";
+import "./redesign.css";
 
-type Screenshot = (typeof screenshots)[number];
-type LegalPageKey = keyof typeof legalPages;
+const repo = "https://github.com/ravithejatech714-create/replayguard-community";
+const asset = (path: string) =>
+  `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
+const steps = [
+  [
+    "Inspect & select",
+    "Find the records that need another pass.",
+    "Explore topics and partitions. Define the source, destination and bounded offset range before any recovery begins.",
+    ScanSearch,
+  ],
+  [
+    "Preview impact",
+    "See downstream impact before execution.",
+    "Review the resolved recovery scope alongside downstream-impact information: destination topics, consumer groups and available lag information. Make an informed decision before replay begins.",
+    SlidersHorizontal,
+  ],
+  [
+    "Dry run",
+    "Examine the recovery before producing records.",
+    "Run the selected scope in dry-run mode to read the source and review the result without producing records into the destination topic.",
+    FlaskConical,
+  ],
+  [
+    "Govern & approve",
+    "Keep recovery within your team's rules.",
+    "Apply policy limits and independent approval where required. A recovery request is not unrestricted permission to execute.",
+    ShieldCheck,
+  ],
+  [
+    "Execute & control",
+    "Set the pace. Keep control of the recovery.",
+    "Configure a records-per-second limit and use pause, resume and stop controls during replay. Recover the selected events without handing over unrestricted execution.",
+    Gauge,
+  ],
+  [
+    "Monitor & recover",
+    "Follow progress. Recover from interruptions.",
+    "Monitor partition progress and recorded checkpoints. Eligible interrupted jobs can resume from checkpointed progress; infrastructure-failure edge cases can still result in duplicate delivery.",
+    Activity,
+  ],
+  [
+    "Audit & trace",
+    "Know what replayed, who requested it and who approved.",
+    "Review recovery scope, execution history, requester and approver details, and recorded results. Replay provenance helps trace recovered records back to the recovery operation.",
+    FileCheck2,
+  ],
+] as const;
+
+const productViews = [
+  {
+    title: "Execution controls",
+    path: "screenshots/execution-controls-hd-20261016.png",
+    description:
+      "Follow replay progress and control execution with pause, resume and stop actions.",
+    icon: Gauge,
+  },
+  {
+    title: "Progress",
+    path: "screenshots/recovery-progress-hd-20261016.png",
+    description:
+      "Monitor per-partition offsets, records read and produced, and checkpointed progress.",
+    icon: Activity,
+  },
+  {
+    title: "Governance",
+    path: "screenshots/recovery-governance-hd-20261016.png",
+    description:
+      "Review recovery scope and require an authorized checker to approve policy-governed changes.",
+    icon: ShieldCheck,
+  },
+] as const;
+type ProductView = (typeof productViews)[number];
+const operations = [
+  [
+    "Offset-range replay",
+    "Recover a precise range of events after a processing fix.",
+    "Select partitions and offset boundaries, preview the scope, then replay into an approved destination.",
+    "Included in Community within its limits",
+  ],
+  [
+    "Timestamp-window recovery",
+    "Turn an incident window into a recovery scope.",
+    "Resolve a start and end time to partition offsets, then review the proposed recovery before execution.",
+    "Evaluation / paid plan",
+  ],
+  [
+    "DLQ redrive",
+    "Give failed events a controlled path back.",
+    "Review dead-letter records and destination routing before reprocessing into an approved topic.",
+    "Evaluation / paid plan",
+  ],
+  [
+    "Consumer-group offset reset",
+    "Reposition a consumer group with oversight.",
+    "Preview the intended offset changes, apply policy checks and reconcile uncertain outcomes.",
+    "Evaluation / paid plan",
+  ],
+];
+const questions = [
+  [
+    "Is Community free or open source?",
+    "Community is free to use under the software usage terms in the public repository. It is proprietary software, not an open-source license. No paid license is required to start.",
+  ],
+  [
+    "What can I try in Community?",
+    "Offset-range replay between different topics on one Kafka profile, including dry runs, within the limits shown above. Dry runs do not consume monthly execution credits, but other limits still apply.",
+  ],
+  [
+    "Can I recover into the same topic or across clusters?",
+    "These workflows require an appropriate evaluation or paid license. Same-topic replay has additional safeguards, including a matching dry run and approval. Discuss your route with us before evaluating.",
+  ],
+  [
+    "Does recovery guarantee exactly-once business processing?",
+    "No. Transactional replay is available on eligible routes, but downstream business processing must still handle repeated events safely. Recorded execution evidence is not proof of downstream application correctness.",
+  ],
+  [
+    "Where does ReplayGuard run?",
+    "Inside your own environment. The Community repository includes Docker Compose installation guidance. Contact us for a technical evaluation, including Kubernetes deployment requirements.",
+  ],
+  [
+    "Can it recover events that Kafka no longer retains?",
+    "Only if those events remain available from a suitable source. With Streambased K.S.I., historical data in Iceberg can provide that source. Availability and offset mapping must be verified; ReplayGuard does not recreate missing data.",
+  ],
+];
+
+function Install({ placement }: { placement: string }) {
+  return (
+    <a
+      className="rg-button rg-primary"
+      href={repo}
+      onClick={() =>
+        track("evaluation_cta_click", {
+          source: placement,
+          action: "community_install",
+        })
+      }
+    >
+      Install Community <ArrowUpRight size={17} />
+    </a>
+  );
+}
 
 export function App() {
-  const [activeScreenshot, setActiveScreenshot] = useState<Screenshot | null>(null);
   const [hash, setHash] = useState(window.location.hash);
-  const activePage = getLegalPage(hash);
-
+  const [menu, setMenu] = useState(false);
+  const [preview, setPreview] = useState<ProductView | null>(null);
+  const menuButton = useRef<HTMLButtonElement>(null);
+  const key = hash.replace("#/", "") as keyof typeof legalPages;
+  const legal =
+    hash.startsWith("#/") &&
+    Object.prototype.hasOwnProperty.call(legalPages, key)
+      ? legalPages[key]
+      : null;
   useEffect(() => {
-    const handleHashChange = () => setHash(window.location.hash);
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
-
+    const update = () => {
+      setHash(window.location.hash);
+      setMenu(false);
+    };
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && menu) {
+        setMenu(false);
+        menuButton.current?.focus();
+      }
+    };
+    window.addEventListener("hashchange", update);
+    window.addEventListener("keydown", escape);
+    return () => {
+      window.removeEventListener("hashchange", update);
+      window.removeEventListener("keydown", escape);
+    };
+  }, [menu]);
+  useEffect(() => {
+    if (legal) window.scrollTo(0, 0);
+  }, [legal]);
   return (
-    <div className="site-shell">
-      <a className="skip-link" href="#main-content">Skip to content</a>
-      <Header />
-      {activePage ? (
-        <LegalPage pageKey={activePage} />
+    <div className="rg-site">
+      <a className="skip-link" href="#main-content">
+        Skip to content
+      </a>
+      <header className="rg-header">
+        <div className="rg-container rg-nav-row">
+          <a className="brand" href="#top" aria-label="ReplayGuard home">
+            <BrandLogo />
+          </a>
+          <button
+            ref={menuButton}
+            className="rg-menu"
+            aria-label={menu ? "Close navigation" : "Open navigation"}
+            aria-expanded={menu}
+            aria-controls="site-navigation"
+            onClick={() => setMenu(!menu)}
+          >
+            {menu ? <X /> : <Menu />}
+          </button>
+          <nav
+            id="site-navigation"
+            className={menu ? "rg-nav is-open" : "rg-nav"}
+            aria-label="Main navigation"
+          >
+            <a href="#operations" onClick={() => setMenu(false)}>
+              Product
+            </a>
+            <a href="#partners" onClick={() => setMenu(false)}>
+              Streambased partnership
+            </a>
+            <a href="#community" onClick={() => setMenu(false)}>
+              Community
+            </a>
+            <a href="#request-review" onClick={() => setMenu(false)}>
+              Request a demo
+            </a>
+          </nav>
+          <div className="rg-header-install">
+            <Install placement="header" />
+          </div>
+        </div>
+      </header>
+      {legal ? (
+        <main id="main-content" className="rg-container rg-legal">
+          <a href="#top" className="rg-text-link">
+            Back to ReplayGuard <ArrowRight size={16} />
+          </a>
+          <p className="rg-eyebrow">{legal.eyebrow}</p>
+          <h1>{legal.title}</h1>
+          {legal.body.map((text) => (
+            <p key={text}>{text}</p>
+          ))}
+          <a href="mailto:ravitheja.vkota@replayguard.in">
+            ravitheja.vkota@replayguard.in
+          </a>
+        </main>
       ) : (
-        <MarketingPage
-          activeScreenshot={activeScreenshot}
-          setActiveScreenshot={setActiveScreenshot}
-        />
-      )}
-      <Footer />
-      {activeScreenshot && (
-        <ScreenshotLightbox shot={activeScreenshot} onClose={() => setActiveScreenshot(null)} />
-      )}
-    </div>
-  );
-}
-
-function Header() {
-  return (
-    <header className="topbar">
-      <a className="brand" href="#top" aria-label="ReplayGuard home">
-        <BrandLogo />
-      </a>
-      <nav className="main-nav" aria-label="Main navigation">
-        <a href="#problem">Problem</a>
-        <a href="#operations">Operations</a>
-        <a href="#governance">Governance</a>
-        <a href="#partners">Partners</a>
-        <a href="#product">Product</a>
-        <a href="#security">Security</a>
-        <a href="#deployment">Deployment</a>
-        <a href="#evaluation">Evaluation</a>
-        <a href="#faq">FAQ</a>
-      </nav>
-      <a
-        className="nav-cta"
-        href="#request-review"
-        onClick={() => track('hero_review_cta_click', { source: 'header' })}
-      >
-        Book a Recovery Review
-      </a>
-    </header>
-  );
-}
-
-function MarketingPage({
-  activeScreenshot,
-  setActiveScreenshot,
-}: {
-  activeScreenshot: Screenshot | null;
-  setActiveScreenshot: (shot: Screenshot | null) => void;
-}) {
-  return (
-    <main id="main-content">
-      <HeroSection />
-      <DiagnosticQuestions />
-      <RecoveryOperations />
-      <DemoVideoSection />
-      <TechnologyPartners />
-      <ReplayComparison />
-      <ReplayWorkflow />
-      <AutomationSection />
-      <SameTopicSection />
-      <OperationalImpact />
-      <ProductCapabilities />
-      <ProductScreenshots activeScreenshot={activeScreenshot} onOpen={setActiveScreenshot} />
-      <SecuritySection />
-      <DeploymentArchitecture />
-      <AudienceFit />
-      <EvaluationProcess />
-      <PositioningComparison />
-      <AboutReplayGuard />
-      <FAQSection />
-      <LeadCaptureSection />
-      <FinalCTA />
-    </main>
-  );
-}
-
-function HeroSection() {
-  return (
-    <section id="top" className="hero">
-      <div className="hero-copy">
-        <p className="eyebrow">Self-hosted Kafka recovery control plane</p>
-        <h1>Govern Kafka recovery inside your infrastructure</h1>
-        <p className="hero-text">
-          ReplayGuard gives platform and SRE teams one governed workflow for offset-range replay,
-          timestamp recovery, DLQ redrive and consumer-group reset, with enforceable policies,
-          maker-checker approvals and evidence after execution.
-        </p>
-        <div className="hero-actions">
-          <a
-            className="button primary"
-            href="#request-review"
-            onClick={() => track('hero_review_cta_click', { source: 'hero' })}
-          >
-            Book a Recovery Workflow Review
-          </a>
-          <a className="button secondary" href="#operations">Explore Recovery Operations</a>
-        </div>
-        <div className="trust-row" aria-label="Platform highlights">
-          <span>Self-hosted</span>
-          <span>Policy-enforced scope</span>
-          <span>Maker-checker approval</span>
-          <span>Agent-ready APIs</span>
-          <span>Recovery evidence</span>
-        </div>
-      </div>
-      <ProductPreview />
-    </section>
-  );
-}
-
-function TechnologyPartners() {
-  return (
-    <section id="partners" className="section partnership-section" aria-labelledby="partnership-title">
-      <div className="section-heading">
-        <p className="eyebrow">Technology partners</p>
-        <h2 id="partnership-title">Streambased + ReplayGuard</h2>
-        <p>Historical event access meets governed Kafka recovery. Streambased is our first technology partner.</p>
-      </div>
-      <div className="partnership-identity">
-        <div className="brand"><BrandLogo /></div>
-        <span className="partnership-plus" aria-hidden="true">+</span>
-        <img className="streambased-logo" src="/assets/RGB%20Streambased%20Logos-02.svg"
-          alt="Streambased" width="941" height="230" loading="lazy" />
-        <a className="text-link" href="https://streambased.io/" target="_blank" rel="noopener noreferrer">Visit Streambased <span aria-hidden="true">&#8599;</span></a>
-      </div>
-      <div className="partnership-story">
-        <div>
-          <p className="eyebrow">The joint use case</p>
-          <h3>Recover events beyond live Kafka retention</h3>
-          <p>A production bug has been fixed, but the events that need reprocessing are no longer in live Kafka.
-            When those events remain available in Iceberg, Streambased K.S.I. provides access through the Kafka protocol.
-            ReplayGuard brings the selected events back into an approved Kafka destination through a governed recovery workflow.</p>
-        </div>
-        <div className="partnership-example">
-          <p className="eyebrow">Example incident</p>
-          <h3>Reprocess events affected by version 2.4.7</h3>
-          <p>An engineer identifies the affected historical events, confirms their K.S.I. partition and offset ranges,
-            and proposes a bounded recovery. After a dry run and required approval, ReplayGuard replays them at an agreed rate.
-            The application owner checks the corrected processing outcome.</p>
-        </div>
-      </div>
-      <ol className="partnership-flow" aria-label="Joint recovery workflow">
-        <li><span className="eyebrow">01 / Identify</span><h3>Find historical events</h3><p>Use historical data to identify the affected selection and confirm availability through Streambased K.S.I.</p></li>
-        <li><span className="eyebrow">02 / Govern</span><h3>Review the recovery</h3><p>Preview the ranges in ReplayGuard, complete a dry run and obtain policy-required approval.</p></li>
-        <li><span className="eyebrow">03 / Recover</span><h3>Replay with control</h3><p>Recover into the approved Kafka topic with rate limits, operational controls and recovery evidence.</p></li>
-        <li><span className="eyebrow">04 / Validate</span><h3>Confirm the outcome</h3><p>Inspect the destination and validate the downstream application result before closing the incident.</p></li>
-      </ol>
-      <p className="partnership-boundary">Streambased provides historical access; ReplayGuard governs recovery.
-        Historical availability and offset mapping must be confirmed. Replay does not repair invalid payloads or guarantee a correct business outcome.</p>
-      <a className="button primary" href="#request-review" onClick={() => track('hero_review_cta_click', { source: 'streambased_partnership' })}>Discuss the Joint Use Case</a>
-    </section>
-  );
-}
-
-function DiagnosticQuestions() {
-  return (
-    <section id="problem" className="section diagnostic-section">
-      <div className="section-heading">
-        <p className="eyebrow">Recovery under pressure</p>
-        <h2>Can your team answer these questions before production state changes?</h2>
-      </div>
-      <div className="question-grid">
-        {diagnosticQuestions.map((question, index) => (
-          <article className="question-card" key={question}>
-            <span>{String(index + 1).padStart(2, '0')}</span>
-            <p>{question}</p>
-          </article>
-        ))}
-      </div>
-      <p className="closing-statement">
-        If these answers depend on the individual running a command, recovery is relying on judgement instead of an enforceable control plane.
-      </p>
-    </section>
-  );
-}
-
-function RecoveryOperations() {
-  return (
-    <section id="operations" className="section recovery-operations-section">
-      <div className="section-heading wide">
-        <p className="eyebrow">One control plane, four recovery paths</p>
-        <h2>Move from replay tooling to governed Kafka recovery</h2>
-        <p>
-          Operators use a consistent preview, policy, approval and evidence model across the
-          recovery actions that otherwise live in separate scripts, runbooks and command-line tools.
-        </p>
-      </div>
-      <div className="recovery-operation-grid">
-        {recoveryOperations.map((operation) => (
-          <article className="recovery-operation-card" key={operation.title}>
-            <span>{operation.code}</span>
-            <h3>{operation.title}</h3>
-            <p>{operation.text}</p>
-            <small>{operation.detail}</small>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function DemoVideoSection() {
-  const videoPath = `${import.meta.env.BASE_URL}${demoVideo.path.replace(/^\//, '')}`;
-  const posterPath = `${import.meta.env.BASE_URL}${demoVideo.poster.replace(/^\//, '')}`;
-
-  return (
-    <section id="demo" className="section demo-video-section">
-      <div className="section-heading">
-        <p className="eyebrow">Governed recovery walkthrough</p>
-        <h2>See ReplayGuard govern Kafka recovery from proposal to evidence</h2>
-        <p>
-          Follow a complete recovery workflow: inspect Kafka state, resolve the exact scope, apply
-          policy guardrails and independent approval, execute with runtime controls, then review
-          verification and immutable evidence.
-        </p>
-      </div>
-      <div className="video-frame">
-        <video
-          aria-label="ReplayGuard governed Kafka recovery demo"
-          controls
-          playsInline
-          preload="metadata"
-          poster={posterPath}
-          onPlay={() => track('demo_video_play')}
-        >
-          <source src={videoPath} type="video/mp4" />
-          <a href={videoPath}>Download the ReplayGuard governed recovery demo.</a>
-        </video>
-      </div>
-      <div className="workflow-tags" aria-label="Demo workflow stages">
-        {demoVideo.stages.map((stage) => <span key={stage}>{stage}</span>)}
-      </div>
-    </section>
-  );
-}
-
-function ReplayComparison() {
-  return (
-    <section className="section comparison-section">
-      <div className="section-heading wide">
-        <p className="eyebrow">Operational difference</p>
-        <h2>A recovery command changes Kafka state. A control plane governs the decision.</h2>
-      </div>
-      <div className="comparison-table" role="table" aria-label="Manual replay versus controlled replay">
-        <div className="comparison-row comparison-head" role="row">
-          <span role="columnheader">Area</span>
-          <span role="columnheader">Manual scripts / CLI</span>
-          <span role="columnheader">ReplayGuard</span>
-        </div>
-        {replayComparison.map(([area, manual, replayguard]) => (
-          <div className="comparison-row" role="row" key={area}>
-            <strong role="cell">{area}</strong>
-            <span role="cell">{manual}</span>
-            <span role="cell">{replayguard}</span>
-          </div>
-        ))}
-      </div>
-      <p className="section-note">
-        Well-engineered internal tools remain useful. ReplayGuard standardizes the policy, approval,
-        execution and evidence surrounding production recovery without replacing Kafka itself.
-      </p>
-    </section>
-  );
-}
-
-function ReplayWorkflow() {
-  return (
-    <section id="governance" className="section workflow-section">
-      <div className="section-heading">
-        <p className="eyebrow">Governance before execution</p>
-        <h2>Every recovery follows a reviewable control chain</h2>
-      </div>
-      <div className="workflow-grid">
-        {governanceSteps.map(([title, text], index) => (
-          <article className="workflow-card" key={title}>
-            <span>{String(index + 1).padStart(2, '0')}</span>
-            <h3>{title}</h3>
-            <p>{text}</p>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function AutomationSection() {
-  return (
-    <section className="section automation-section">
-      <div className="automation-layout">
-        <div className="section-heading">
-          <p className="eyebrow">Automation without bypassing control</p>
-          <h2>Let incident agents propose recovery, not silently approve themselves</h2>
-          <p>
-            Service accounts give incident agents, runbooks and internal automation a narrow machine
-            identity. They can validate scope and submit governed proposals while human approval remains
-            in force wherever policy requires it.
-          </p>
-        </div>
-        <div className="automation-control-list">
-          {automationControls.map(([title, text]) => (
-            <article key={title}>
-              <h3>{title}</h3>
-              <p>{text}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function SameTopicSection() {
-  return (
-    <section className="section same-topic-section">
-      <div className="same-topic-copy">
-        <p className="eyebrow">Guarded same-topic replay</p>
-        <h2>Support the high-risk route without normalizing unsafe execution</h2>
-        <p>
-          Replaying back into the source topic can be operationally necessary, but it can also create
-          feedback loops and duplicate previously replayed records. ReplayGuard treats it as a distinct,
-          approval-gated path rather than a normal destination choice.
-        </p>
-      </div>
-      <ul className="safeguard-list">
-        {sameTopicSafeguards.map((item) => <li key={item}>{item}</li>)}
-      </ul>
-    </section>
-  );
-}
-
-function OperationalImpact() {
-  return (
-    <section className="section impact-section">
-      <div className="section-heading">
-        <p className="eyebrow">Operational impact</p>
-        <h2>Reduce the coordination cost and uncertainty surrounding Kafka recovery</h2>
-      </div>
-      <div className="impact-grid">
-        {operationalImpact.map(([title, text]) => (
-          <article className="impact-card" key={title}>
-            <h3>{title}</h3>
-            <p>{text}</p>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function ProductCapabilities() {
-  return (
-    <section id="product" className="section capability-section">
-      <div className="section-heading">
-        <p className="eyebrow">Product capabilities</p>
-        <h2>Purpose-built for recovery scope, governance, execution and evidence</h2>
-      </div>
-      <div className="capability-grid">
-        {capabilityGroups.map((group) => (
-          <article className="capability-card" key={group.title}>
-            <h3>{group.title}</h3>
-            <ul>
-              {group.items.map((item) => <li key={item}>{item}</li>)}
-            </ul>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function ProductScreenshots({
-  onOpen,
-}: {
-  activeScreenshot: Screenshot | null;
-  onOpen: (shot: Screenshot) => void;
-}) {
-  return (
-    <section id="screenshots" className="section screenshots-section">
-      <div className="section-heading">
-        <p className="eyebrow">Product proof</p>
-        <h2>See the operational foundation</h2>
-        <p>
-          These sanitized product views show the established replay and inspection workflow. The
-          governed recovery interface extends the same visual model to policies, approvals, recovery
-          operations and service accounts.
-        </p>
-      </div>
-      <div className="screenshot-grid">
-        {screenshots.map((shot, index) => (
-          <ScreenshotCard
-            key={shot.title}
-            shot={shot}
-            index={index}
-            onOpen={() => {
-              track('screenshot_open', { title: shot.title });
-              onOpen(shot);
-            }}
-          />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function SecuritySection() {
-  return (
-    <section id="security" className="section security-section">
-      <div className="section-heading">
-        <p className="eyebrow">Operational safety and security</p>
-        <h2>Designed for controlled production operations</h2>
-      </div>
-      <div className="security-grid">
-        {safetyGroups.map((group) => (
-          <article className="security-card" key={group.title}>
-            <h3>{group.title}</h3>
-            <ul>
-              {group.items.map((item) => <li key={item}>{item}</li>)}
-            </ul>
-          </article>
-        ))}
-      </div>
-      <a className="text-link" href="#deployment">Review deployment and security details</a>
-    </section>
-  );
-}
-
-function DeploymentArchitecture() {
-  return (
-    <section id="deployment" className="section deployment-section">
-      <div className="section-heading">
-        <p className="eyebrow">Self-hosted deployment</p>
-        <h2>Run the recovery control plane inside your environment</h2>
-        <p>
-          Deploy ReplayGuard using Docker Compose or Kubernetes with Helm. Your environment controls
-          Kafka connectivity, network access, credentials and the application endpoint.
-        </p>
-      </div>
-      <div className="deployment-options" aria-label="Customer deployment choices">
-        <div className="arch-flow">
-          {['Your selected events', 'Your approved recovery', 'Your Kafka destination'].map((node, index, list) => (
-            <div className="arch-node-wrap" key={node}>
-              <div className="arch-node">{node}</div>
-              {index < list.length - 1 && <span className="arch-arrow" aria-hidden="true">-&gt;</span>}
+        <main id="main-content">
+          <section id="top" className="rg-hero">
+            <div className="rg-container">
+              <a className="rg-announcement" href="#community">
+                <span /> Free Community edition is available{" "}
+                <ArrowRight size={15} />
+              </a>
+              <p className="rg-eyebrow">
+                Your events. Your infrastructure. Your recovery.
+              </p>
+              <h1>ReplayGuard</h1>
+              <h2>
+                Governed Kafka recovery.
+                <br />
+                <span>With control built in.</span>
+              </h2>
+              <p className="rg-hero-copy">
+                Recover the right events after a processing failure.
+                <br className="rg-desktop-break" /> Preview downstream impact,
+                apply approval policies, control execution and retain a
+                traceable recovery record.
+              </p>
+              <div className="rg-actions">
+                <Install placement="hero" />
+                <a className="rg-button rg-secondary" href="#request-review">
+                  Request a demo <ArrowRight size={17} />
+                </a>
+              </div>
+              <p className="rg-micro">
+                Self-hosted <span>/</span> Free to start <span>/</span> Your
+                Kafka data stays under your control
+              </p>
+              <ProductShowcase onOpen={setPreview} />
             </div>
-          ))}
-        </div>
-        <div className="arch-side-grid">
-          <div><strong>Customer-controlled access</strong><span>Your users, credentials and network policies</span></div>
-          <div><strong>Deployment choices</strong><span>Docker Compose or Kubernetes + Helm</span></div>
-          <div><strong>Subscription activation</strong><span>Signed customer licence key</span></div>
-        </div>
-      </div>
-      <div className="callout-grid">
-        {deploymentCallouts.map((callout) => <p key={callout}>{callout}</p>)}
-      </div>
-    </section>
-  );
-}
-
-function AudienceFit() {
-  return (
-    <section className="section fit-section">
-      <div className="section-heading">
-        <p className="eyebrow">Qualification</p>
-        <h2>Built for teams that treat recovery as a production operation</h2>
-        <p>
-          ReplayGuard is most relevant when reprocessing, redrive and offset changes require stronger
-          repeatability, separation of duties and evidence than scripts and tickets provide.
-        </p>
-      </div>
-      <div className="fit-grid">
-        <article>
-          <h3>Suitable teams</h3>
-          <ul>{audienceFit.suitable.map((item) => <li key={item}>{item}</li>)}</ul>
-        </article>
-        <article>
-          <h3>Not intended for</h3>
-          <ul>{audienceFit.notIntended.map((item) => <li key={item}>{item}</li>)}</ul>
-        </article>
-      </div>
-    </section>
-  );
-}
-
-function EvaluationProcess() {
-  return (
-    <section id="evaluation" className="section evaluation-section">
-      <div className="section-heading">
-        <p className="eyebrow">Technical evaluation process</p>
-        <h2>Evaluate ReplayGuard against one real recovery runbook</h2>
-      </div>
-      <div className="evaluation-layout">
-        <div className="evaluation-steps">
-          {evaluationSteps.map(([title, text], index) => (
-            <article key={title}>
-              <span>{String(index + 1).padStart(2, '0')}</span>
+          </section>
+          <section id="problem" className="rg-section rg-container">
+            <p className="rg-eyebrow">
+              Recovery is more than reading events again
+            </p>
+            <div className="rg-section-heading">
+              <h2>
+                A fix is only half
+                <br />
+                the recovery.
+              </h2>
+              <p>
+                Incorrectly processed events, growing dead-letter queues and
+                offset mistakes still need a deliberate response. An ad hoc
+                replay can repeat the original damage or overwhelm a downstream
+                service.
+              </p>
+            </div>
+            <div className="rg-principles">
+              {[
+                [
+                  "Bound the impact",
+                  "Choose which records to recover, not an unbounded stream.",
+                ],
+                [
+                  "Control the change",
+                  "Use policy checks, approvals and a deliberate execution rate.",
+                ],
+                [
+                  "Keep the record",
+                  "See what was replayed, who requested it, who approved it and the recorded outcome.",
+                ],
+              ].map(([title, text], index) => (
+                <article key={title}>
+                  <span className="rg-number">0{index + 1}</span>
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+          <Workflow />
+          <RecoveryScenarios />
+          <section id="operations" className="rg-section rg-container">
+            <p className="rg-eyebrow">One recovery workspace</p>
+            <div className="rg-section-heading">
+              <h2>
+                The right operation.
+                <br />
+                The same discipline.
+              </h2>
+              <p>
+                Start with precise offset-range replay. Evaluate the broader
+                recovery workflows when your team needs them.
+              </p>
+            </div>
+            <Operations />
+          </section>
+          <section id="product" className="rg-section rg-video-band">
+            <div className="rg-container">
+              <div className="rg-section-heading">
+                <div>
+                  <p className="rg-eyebrow">Audit evidence</p>
+                  <h2>
+                    Every recovery
+                    <br />
+                    has a record.
+                  </h2>
+                </div>
+                <p>
+                  Know what was replayed, who requested it, who approved it
+                  and how execution completed. Keep evidence for operational
+                  review without relying on someone's memory of the incident.
+                </p>
+              </div>
+              <div className="rg-principles">
+                {[
+                  ["Scope and ownership", "Review the selected source, destination and ranges alongside the requester and approval record."],
+                  ["Execution and outcome", "Follow recorded actions, checkpointed progress and the final recovery outcome."],
+                  ["Provenance and review", "Trace recovered records back to their recovery operation and export evidence for your team's review."],
+                ].map(([title, description]) => (
+                  <article key={title}>
+                    <FileCheck2 size={24} />
+                    <h3>{title}</h3>
+                    <p>{description}</p>
+                  </article>
+                ))}
+              </div>
+              <a className="rg-text-link" href="#request-review">
+                See the full workflow in a demo <ArrowRight size={17} />
+              </a>
+            </div>
+          </section>
+          <section id="partners" className="rg-partner rg-section">
+            <div className="rg-container">
+              <p className="rg-eyebrow">Technology partnership</p>
+              <div className="rg-partner-logos">
+                <span>ReplayGuard</span>
+                <span className="rg-times">+</span>
+                <img
+                  src={asset("assets/RGB Streambased Logos-02.png")}
+                  alt="Streambased"
+                  loading="lazy"
+                />
+              </div>
+              <div className="rg-section-heading">
+                <h2>
+                  Beyond Kafka retention.
+                  <br />
+                  Back into your workflow.
+                </h2>
+                <p>
+                  A producer bug affected a batch of events. The fix is
+                  deployed, but those events have aged out of live Kafka.
+                  Historical data does not have to mean the end of recovery.
+                </p>
+              </div>
+              <ol className="rg-partner-flow">
+                <li>
+                  <span>01 / DISCOVER</span>
+                  <h3>Find historical events</h3>
+                  <p>
+                    Query the retained Iceberg data to identify the affected
+                    events and source ranges.
+                  </p>
+                </li>
+                <li>
+                  <span>02 / ACCESS</span>
+                  <h3>Read through K.S.I.</h3>
+                  <p>
+                    Streambased exposes available historical events through its
+                    Kafka-compatible interface.
+                  </p>
+                </li>
+                <li>
+                  <span>03 / RECOVER</span>
+                  <h3>Reprocess with ReplayGuard</h3>
+                  <p>
+                    Review the scope and recover into an approved Kafka topic,
+                    with governance and rate limits.
+                  </p>
+                </li>
+              </ol>
+              <div className="rg-partner-bottom">
+                <p>
+                  Requires available historical data and verified offset
+                  mapping. This cross-profile workflow requires an appropriate
+                  evaluation or paid license.
+                </p>
+                <a className="rg-text-link" href="#request-review">
+                  Discuss the joint use case <ArrowUpRight size={18} />
+                </a>
+              </div>
+            </div>
+          </section>
+          <section id="security" className="rg-section rg-container">
+            <p className="rg-eyebrow">Customer-controlled deployment</p>
+            <div className="rg-section-heading">
+              <h2>
+                Your environment.
+                <br />
+                Your operational boundaries.
+              </h2>
+              <p>
+                ReplayGuard complements your Kafka platform. You control
+                connectivity, application access and the destinations that
+                recovery is allowed to reach.
+              </p>
+            </div>
+            <div id="deployment" className="rg-principles">
+              {[
+                [
+                  "Self-hosted",
+                  "Run inside your environment. Start with the public Docker Compose installation guide.",
+                ],
+                [
+                  "Governed access",
+                  "Use role-based permissions, configured policies and approval requirements. Advanced capabilities depend on your plan.",
+                ],
+                [
+                  "Auditable recovery",
+                  "Review what replayed, the requester and approver, execution history and provenance. Your application team can then validate downstream business results.",
+                ],
+              ].map(([title, text]) => (
+                <article key={title}>
+                  <ShieldCheck size={24} />
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+          <section id="community" className="rg-section rg-community">
+            <div className="rg-container rg-community-grid">
               <div>
-                <h3>{title}</h3>
-                <p>{text}</p>
+                <p className="rg-eyebrow">Free Community edition</p>
+                <h2>
+                  Start with one
+                  <br />
+                  real recovery.
+                </h2>
+                <p>
+                  Install ReplayGuard, connect a test Kafka profile and walk
+                  through an offset-range recovery on your own infrastructure.
+                </p>
+                <Install placement="community" />
+                <a className="rg-text-link" href={`${repo}#readme`}>
+                  Read the installation guide <ArrowUpRight size={17} />
+                </a>
+                <small>
+                  Free proprietary software. Usage terms apply.
+                  <br />
+                  No paid license needed for Community.
+                </small>
               </div>
-            </article>
-          ))}
-        </div>
-        <aside className="criteria-card">
-          <h3>Success criteria</h3>
-          <ul>{successCriteria.map((item) => <li key={item}>{item}</li>)}</ul>
-          <a
-            className="button primary"
-            href="#request-review"
-            onClick={() => track('evaluation_cta_click')}
-          >
-            Discuss a Technical Evaluation
-          </a>
-        </aside>
-      </div>
-    </section>
-  );
-}
-
-function PositioningComparison() {
-  return (
-    <section className="section positioning-section">
-      <div className="section-heading">
-        <p className="eyebrow">Where ReplayGuard fits</p>
-        <h2>A recovery control plane, not another Kafka platform</h2>
-      </div>
-      <div className="fit-comparison-grid">
-        {fitComparisons.map(([name, strength, limitation]) => (
-          <article key={name}>
-            <h3>{name}</h3>
-            <p><strong>Strength:</strong> {strength}</p>
-            <p><strong>ReplayGuard addresses:</strong> {limitation}</p>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function AboutReplayGuard() {
-  return (
-    <section className="section about-section">
-      <div className="section-heading">
-        <p className="eyebrow">About ReplayGuard</p>
-        <h2>Focused infrastructure software for governed Kafka recovery</h2>
-        <p>
-          ReplayGuard is an independently built infrastructure product focused on safer recovery and
-          incident operations around Kafka. Product walkthroughs, technical evaluations and early
-          customer onboarding are handled directly by the founder.
-        </p>
-      </div>
-      <div className="about-grid">
-        <div><span>Founder</span><strong>{site.founderName}</strong></div>
-        <div><span>Product status</span><strong>{site.productVersion} available for guided evaluations</strong></div>
-        <div><span>Last updated</span><strong>{site.lastUpdated}</strong></div>
-      </div>
-    </section>
-  );
-}
-
-function FAQSection() {
-  return (
-    <section id="faq" className="section faq-section">
-      <div className="section-heading">
-        <p className="eyebrow">FAQ</p>
-        <h2>Common questions from platform teams</h2>
-      </div>
-      <div className="faq-list">
-        {faqs.map(([question, answer]) => (
-          <details
-            key={question}
-            onToggle={(event) => {
-              if (event.currentTarget.open) {
-                track('faq_expand', { question });
-              }
-            }}
-          >
-            <summary>{question}</summary>
-            <p>{answer}</p>
-          </details>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function LeadCaptureSection() {
-  return (
-    <section id="request-review" className="section lead-section">
-      <div className="section-heading">
-        <p className="eyebrow">Recovery Workflow Review</p>
-        <h2>Discuss your current Kafka recovery runbook</h2>
-        <p>
-          Share one replay, DLQ, timestamp or offset-reset process you use today. The first call focuses
-          on workflow risk, governance gaps and whether a self-hosted evaluation is appropriate.
-        </p>
-      </div>
-      <LeadCaptureForm />
-    </section>
-  );
-}
-
-function FinalCTA() {
-  return (
-    <section className="section final-cta">
-      <div>
-        <h2>Make Kafka recovery a governed operational workflow</h2>
-        <p>
-          Review one current runbook, identify policy and evidence gaps, and evaluate ReplayGuard
-          against a defined recovery scenario inside your environment.
-        </p>
-        <p className="supporting-line">
-          20-minute technical discussion · No installation required for the first call · Self-hosted evaluation available
-        </p>
-      </div>
-      <div className="final-actions">
-        <a
-          className="button primary"
-          href="#request-review"
-          onClick={() => track('hero_review_cta_click', { source: 'final_cta' })}
-        >
-          Book a Recovery Workflow Review
+              <div className="rg-limits">
+                <h3>Included in Community</h3>
+                <ul>
+                  {[
+                    "2 active users / 1 enabled Kafka profile",
+                    "1 enabled policy / 1 concurrent job",
+                    "Offset-range replay between different topics",
+                    "Up to 1,000 records and aggregate offset span per job",
+                    "Up to 25 records/sec / 10 MiB output per job",
+                    "5 actual executions / UTC month",
+                    "Dry runs without monthly execution credit charges",
+                  ].map((text) => (
+                    <li key={text}>
+                      <Check size={17} />
+                      <span>{text}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p>
+                  Dry runs still follow the other Community limits. Same-topic
+                  replay, cross-profile recovery, timestamp recovery, DLQ
+                  redrive, offset reset and service accounts require an
+                  appropriate license.
+                </p>
+              </div>
+            </div>
+          </section>
+          <section id="faq" className="rg-section rg-container rg-faq">
+            <div>
+              <p className="rg-eyebrow">Before you start</p>
+              <h2>A few useful answers.</h2>
+            </div>
+            <div>
+              {questions.map(([question, answer]) => (
+                <details key={question}>
+                  <summary>
+                    {question}
+                    <ChevronDown size={18} />
+                  </summary>
+                  <p>{answer}</p>
+                </details>
+              ))}
+            </div>
+          </section>
+          <section id="evaluation" className="rg-section rg-contact-band">
+            <div id="request-review" className="rg-container rg-contact">
+              <div>
+                <p className="rg-eyebrow">Go further with ReplayGuard</p>
+                <h2>
+                  Bring us your
+                  <br />
+                  recovery scenario.
+                </h2>
+                <p>
+                  Need a broader recovery workflow, a Streambased evaluation or
+                  a deployment review? Tell us what your team needs to recover.
+                </p>
+                <a
+                  className="rg-text-link"
+                  href="mailto:ravitheja.vkota@replayguard.in"
+                >
+                  ravitheja.vkota@replayguard.in <ArrowUpRight size={17} />
+                </a>
+                <p className="rg-micro">
+                  Please do not send credentials, message payloads or
+                  confidential incident data.
+                </p>
+              </div>
+              <LeadCaptureForm />
+            </div>
+          </section>
+        </main>
+      )}
+      <footer className="rg-footer rg-container">
+        <a className="brand" href="#top">
+          <BrandLogo />
         </a>
-        <a className="button secondary" href="#demo">Watch the Core Workflow</a>
-      </div>
-    </section>
-  );
-}
-
-function ProductPreview() {
-  return (
-    <div className="product-preview" aria-label="ReplayGuard governed recovery preview">
-      <div className="preview-top">
-        <span className="dot active" />
-        <span className="dot" />
-        <span className="dot" />
-        <strong>Governed recovery operation</strong>
-      </div>
-      <div className="preview-grid">
-        <aside>
-          <span className="nav-line selected" />
-          <span className="nav-line" />
-          <span className="nav-line short" />
-          <span className="nav-line" />
-        </aside>
-        <div className="preview-main">
-          <div className="preview-stat-row">
-            <div><span>Policy</span><strong>Allowed</strong></div>
-            <div><span>Approval</span><strong>Verified</strong></div>
-            <div><span>Evidence</span><strong>Ready</strong></div>
-          </div>
-          <div className="preview-table">
-            {['PREVIEW', 'DRY RUN', 'APPROVE', 'EXECUTE'].map((status) => (
-              <div className="preview-row" key={status}>
-                <span className="pill running">{status}</span>
-                <span className="route-line" />
-                <span className="offset-line" />
-              </div>
-            ))}
-          </div>
+        <p>Recover deliberately.</p>
+        <div>
+          <a href={repo}>Community</a>
+          {(["privacy", "terms", "security", "contact"] as const).map(
+            (name) => (
+              <a key={name} href={`#/${name}`}>
+                {name[0].toUpperCase() + name.slice(1)}
+              </a>
+            ),
+          )}
         </div>
-      </div>
+        <small>© {new Date().getFullYear()} ReplayGuard</small>
+      </footer>
+      {preview && <Preview view={preview} onClose={() => setPreview(null)} />}
     </div>
   );
 }
 
-function ScreenshotCard({
-  shot,
-  index,
-  onOpen,
-}: {
-  shot: Screenshot;
-  index: number;
-  onOpen: () => void;
-}) {
-  const imagePath = `${import.meta.env.BASE_URL}${shot.path.replace(/^\//, '')}`;
+function ProductShowcase({ onOpen }: { onOpen: (view: ProductView) => void }) {
+  const [selected, setSelected] = useState(0);
+  const view = productViews[selected];
   return (
-    <article className="screenshot-card">
-      <button
-        type="button"
-        className={`screenshot-preview theme-${index % 3}`}
-        onClick={onOpen}
-        aria-label={`Open larger ${shot.title} screenshot`}
-      >
-        <img src={imagePath} alt={`${shot.title}: ${shot.text}`} loading="lazy" />
-      </button>
-      <div>
-        <h3>{shot.title}</h3>
-        <p>{shot.text}</p>
+    <div className="rg-showcase">
+      <div className="rg-product-bar">
+        <span>
+          <ShieldCheck size={16} /> RECOVERY YOU CAN CONTROL AND TRACE
+        </span>
+        <span>Inside ReplayGuard</span>
       </div>
-    </article>
+      <div
+        className="rg-showcase-options"
+        role="group"
+        aria-label="Product views"
+      >
+        {productViews.map((item, index) => {
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.title}
+              aria-pressed={selected === index}
+              onClick={() => setSelected(index)}
+            >
+              <Icon size={17} />
+              {item.title}
+            </button>
+          );
+        })}
+      </div>
+      <button
+        className="rg-product-image"
+        aria-label={`Expand ${view.title} screenshot`}
+        onClick={() => {
+          onOpen(view);
+          track("screenshot_open", { title: view.title });
+        }}
+      >
+        <img
+          src={asset(view.path)}
+          alt={`ReplayGuard ${view.title}: ${view.description}`}
+        />
+        <span className="rg-expand">
+          <ZoomIn size={18} /> View product
+        </span>
+      </button>
+      <p className="rg-showcase-caption">{view.description}</p>
+      <p className="rg-showcase-note">
+        Product demonstration. Screens show an evaluation environment;
+        availability depends on your plan.
+      </p>
+    </div>
   );
 }
 
-function ScreenshotLightbox({ shot, onClose }: { shot: Screenshot; onClose: () => void }) {
-  const imagePath = `${import.meta.env.BASE_URL}${shot.path.replace(/^\//, '')}`;
+function RecoveryScenarios() {
+  const scenarios = [
+    {
+      number: "01",
+      tag: "PROCESSING BUG",
+      title: "The fix is deployed. The affected events remain.",
+      problem:
+        "A faulty producer or consumer version caused a known set of events to be processed incorrectly.",
+      risk: "A broad replay can repeat unaffected work and add load to downstream consumers.",
+      solution:
+        "Select the affected range, preview downstream impact, dry-run the request and execute with a rate limit. Retain the recovery and approval history.",
+      availability:
+        "Start with offset-range replay in Community. Timestamp and same-topic recovery require a license.",
+      href: "#community",
+      action: "Start with Community",
+    },
+    {
+      number: "02",
+      tag: "DEAD-LETTER BACKLOG",
+      title: "The failure is understood. The backlog needs a plan.",
+      problem:
+        "Failed events have accumulated in a dead-letter topic after an application or dependency problem.",
+      risk: "Redriving the entire backlog blindly can repeat failures or send records to the wrong destination.",
+      solution:
+        "Inspect the DLQ, review the selected scope and approved destination, then redrive at a controlled rate with execution history and audit evidence.",
+      availability:
+        "DLQ redrive requires an appropriate evaluation or paid license.",
+      href: "#request-review",
+      action: "Evaluate DLQ redrive",
+    },
+    {
+      number: "03",
+      tag: "BEYOND LIVE RETENTION",
+      title: "Kafka no longer has the events. Your archive does.",
+      problem:
+        "An incident is discovered after the affected events have expired from live Kafka retention.",
+      risk: "Finding historical records alone does not provide a governed path back into the processing pipeline.",
+      solution:
+        "Identify the historical range in Iceberg, access it through Streambased K.S.I., then use ReplayGuard to recover into an approved Kafka topic.",
+      availability:
+        "Requires available historical data, verified offset mapping and a license for cross-profile recovery.",
+      href: "#partners",
+      action: "Explore the joint use case",
+    },
+  ];
   return (
-    <div className="lightbox-backdrop" role="presentation" onClick={onClose}>
-      <section
-        className="lightbox"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="screenshot-lightbox-title"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <header>
-          <div>
-            <p className="eyebrow">Product screenshot</p>
-            <h2 id="screenshot-lightbox-title">{shot.title}</h2>
+    <section id="scenarios" className="rg-section rg-container rg-scenarios">
+      <p className="rg-eyebrow">Built for the work after an incident</p>
+      <div className="rg-section-heading">
+        <h2>
+          Three recovery problems.
+          <br />
+          One governed approach.
+        </h2>
+        <p>
+          Recovery is a production change. Make its scope, downstream impact,
+          execution controls and ownership explicit.
+        </p>
+      </div>
+      {scenarios.map((scenario) => (
+        <article className="rg-scenario" key={scenario.number}>
+          <div className="rg-scenario-title">
+            <span className="rg-eyebrow">
+              {scenario.number} / {scenario.tag}
+            </span>
+            <h3>{scenario.title}</h3>
+            <p>{scenario.problem}</p>
           </div>
-          <button type="button" className="lightbox-close" onClick={onClose} aria-label="Close screenshot preview">
-            Close
+          <div className="rg-scenario-detail">
+            <h4>The operational risk</h4>
+            <p>{scenario.risk}</p>
+            <h4>With ReplayGuard</h4>
+            <p>{scenario.solution}</p>
+            <small>{scenario.availability}</small>
+            <a className="rg-text-link" href={scenario.href}>
+              {scenario.action}
+              <ArrowRight size={16} />
+            </a>
+          </div>
+        </article>
+      ))}
+    </section>
+  );
+}
+
+function Workflow() {
+  const [step, setStep] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const root = useRef<HTMLElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const changed = () => setPlaying(!query.matches);
+    changed();
+    query.addEventListener("change", changed);
+    const observer = new IntersectionObserver(([entry]) =>
+      setVisible(entry.isIntersecting),
+    );
+    if (root.current) observer.observe(root.current);
+    return () => {
+      observer.disconnect();
+      query.removeEventListener("change", changed);
+    };
+  }, []);
+  useEffect(() => {
+    if (!playing || !visible) return;
+    const timer = window.setInterval(
+      () => setStep((current) => (current + 1) % steps.length),
+      6500,
+    );
+    return () => window.clearInterval(timer);
+  }, [playing, visible]);
+  const current = steps[step];
+  const Icon = current[3];
+  return (
+    <section id="governance" className="rg-workflow rg-section" ref={root}>
+      <div className="rg-container">
+        <div className="rg-workflow-top">
+          <div>
+            <p className="rg-eyebrow">A deliberate path to recovery</p>
+            <h2>From affected events to an auditable recovery.</h2>
+          </div>
+          <label className="rg-motion-toggle">
+            <input
+              type="checkbox"
+              checked={!playing}
+              onChange={(event) => setPlaying(!event.target.checked)}
+            />
+            Pause progression
+          </label>
+        </div>
+        <div
+          className="rg-steps"
+          role="group"
+          aria-label="Recovery workflow"
+          onFocus={() => setPlaying(false)}
+        >
+          {steps.map(([title], index) => (
+            <button
+              key={title}
+              id={`step-${index}`}
+              aria-pressed={step === index}
+              aria-controls="workflow-panel"
+              onClick={() => {
+                setStep(index);
+                setPlaying(false);
+              }}
+            >
+              <span>0{index + 1}</span>
+              {title}
+              <ArrowRight size={18} />
+            </button>
+          ))}
+        </div>
+        <div
+          id="workflow-panel"
+          className="rg-workflow-panel"
+          role="region"
+          aria-labelledby={`step-${step}`}
+        >
+          <Icon size={36} />
+          <h3>{current[1]}</h3>
+          <p>{current[2]}</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Operations() {
+  const [selected, setSelected] = useState(0);
+  return (
+    <div className="rg-operations">
+      <div className="rg-operation-tabs" aria-label="Recovery operations">
+        {operations.map(([title], index) => (
+          <button
+            aria-pressed={index === selected}
+            onClick={() => setSelected(index)}
+            key={title}
+          >
+            <span>0{index + 1}</span>
+            {title}
+            <ArrowRight size={17} />
+          </button>
+        ))}
+      </div>
+      <article>
+        <span className="rg-plan-label">{operations[selected][3]}</span>
+        <h3>{operations[selected][1]}</h3>
+        <p>{operations[selected][2]}</p>
+        <a
+          className="rg-text-link"
+          href={selected === 0 ? "#community" : "#request-review"}
+        >
+          {selected === 0 ? "Start with Community" : "Discuss an evaluation"}
+          <ArrowRight size={17} />
+        </a>
+      </article>
+    </div>
+  );
+}
+
+function Preview({
+  view,
+  onClose,
+}: {
+  view: ProductView;
+  onClose: () => void;
+}) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const previous = document.activeElement as HTMLElement | null;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    dialog.current?.showModal();
+    return () => {
+      document.body.style.overflow = overflow;
+      previous?.focus();
+    };
+  }, []);
+  return (
+    <dialog
+      ref={dialog}
+      className="rg-dialog"
+      aria-label={`${view.title} screenshot`}
+      onCancel={onClose}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div>
+        <header>
+          <h2>{view.title}</h2>
+          <button
+            className="rg-icon-button"
+            aria-label="Close screenshot"
+            onClick={onClose}
+          >
+            <X />
           </button>
         </header>
-        <img src={imagePath} alt={`${shot.title}: ${shot.text}`} />
-        <p>{shot.text}</p>
-      </section>
-    </div>
-  );
-}
-
-function LegalPage({ pageKey }: { pageKey: LegalPageKey }) {
-  const page = legalPages[pageKey];
-  return (
-    <main id="main-content" className="legal-page">
-      {/* Formal legal review should be completed before high-volume commercial use. */}
-      <section className="section">
-        <div className="section-heading">
-          <p className="eyebrow">{page.eyebrow}</p>
-          <h1>{page.title}</h1>
-        </div>
-        <div className="legal-card">
-          {page.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-          <a className="button secondary" href="#top">Return to product page</a>
-        </div>
-      </section>
-    </main>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="footer">
-      <div className="footer-brand">
-        <BrandLogo />
-        <p>Self-hosted control plane for governed Kafka recovery operations.</p>
+        <img
+          src={asset(view.path)}
+          alt={`Expanded ReplayGuard ${view.title} product view`}
+        />
+        <p>
+          Product demonstration. Interface and capabilities can vary by release
+          and plan.
+        </p>
       </div>
-      <div className="footer-links" aria-label="Footer navigation">
-        <a href="#product">Product</a>
-        <a href="#governance">Governance</a>
-        <a href="#/security">Security</a>
-        <a href="#deployment">Deployment</a>
-        <a href="#evaluation">Evaluation</a>
-        <a href="#faq">FAQ</a>
-        <a href="#/privacy">Privacy</a>
-        <a href="#/terms">Terms</a>
-        <a href="#/contact">Contact</a>
-        <a href={site.linkedinUrl} target="_blank" rel="noreferrer">LinkedIn</a>
-      </div>
-      <p>Copyright {new Date().getFullYear()} ReplayGuard. All rights reserved.</p>
-    </footer>
+    </dialog>
   );
-}
-
-function getLegalPage(hash: string): LegalPageKey | null {
-  const key = hash.replace('#/', '') as LegalPageKey;
-  return key in legalPages ? key : null;
 }

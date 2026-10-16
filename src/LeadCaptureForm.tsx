@@ -1,4 +1,4 @@
-import { cloneElement, useEffect, useMemo, useRef, useState } from 'react';
+import { cloneElement, useMemo, useRef, useState } from 'react';
 import type { FormEvent, ReactElement } from 'react';
 import { track } from './analytics';
 import { submitLeadForm } from './leadFormService';
@@ -9,7 +9,7 @@ import type { LeadFormFieldErrors } from './leadFormValidation';
 
 type FormStatus = 'idle' | 'submitting' | 'succeeded' | 'failed' | 'configuration-missing';
 
-const fallbackContactEmail = 'ravithejatech714@gmail.com';
+const fallbackContactEmail = 'ravitheja.vkota@replayguard.in';
 
 const stateToPayloadField: Record<keyof LeadFormState, keyof LeadFormPayload | undefined> = {
   fullName: 'name',
@@ -41,11 +41,6 @@ export function LeadCaptureForm() {
     return `mailto:${fallbackContactEmail}?subject=${subject}&body=${body}`;
   }, []);
 
-  useEffect(() => {
-    if (configMissing) {
-      console.error('VITE_LEAD_FORM_ENDPOINT is not configured.');
-    }
-  }, [configMissing]);
 
   function updateField<K extends keyof LeadFormState>(key: K, value: LeadFormState[K]) {
     if (!started) {
@@ -190,7 +185,7 @@ export function LeadCaptureForm() {
       )}
 
       <button className="button primary" type="submit" disabled={submitting || configMissing}>
-        {submitting ? 'Submitting...' : 'Book a Recovery Workflow Review'}
+        {submitting ? 'Submitting...' : 'Request a demo'}
       </button>
     </form>
   );

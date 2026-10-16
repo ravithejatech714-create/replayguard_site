@@ -9,12 +9,6 @@ export const site = {
   evaluationCta: 'Discuss a Technical Evaluation',
 };
 
-export const demoVideo = {
-  path: '/demo/replayguard-governed-recovery-demo.mp4',
-  poster: '/demo/replayguard-governed-recovery-cover.png',
-  stages: ['Inspect', 'Preview', 'Approve', 'Execute', 'Control', 'Evidence'],
-};
-
 export const diagnosticQuestions = [
   'Can operators prove the selected topics, partitions, offsets and record volume before execution?',
   'Do high-impact recoveries require independent approval, or only operator judgement?',
@@ -112,15 +106,6 @@ export const sameTopicSafeguards = [
   'ReplayGuard-produced records skipped by default, with explicit override required',
 ];
 
-export const screenshots = [
-  { title: 'Topic Explorer', path: '/screenshots/topic-explorer.png', text: 'Inspect Kafka topics, partitions, offsets, keys and bounded message previews before defining recovery scope.' },
-  { title: 'Replay Creation', path: '/screenshots/replay-creation.png', text: 'Create a structured multi-partition replay with route, ranges, rate limits, execution mode and validation.' },
-  { title: 'Execution Details', path: '/screenshots/replay-detail.png', text: 'Review execution state, per-partition progress, validation, idempotency metadata and lifecycle events.' },
-  { title: 'Kafka Profiles', path: '/screenshots/kafka-profiles.png', text: 'Configure reusable Kafka connections and validate broker access before governed operations use them.' },
-  { title: 'Audit History', path: '/screenshots/audit-logs.png', text: 'Review operator, automation, administrative and execution actions through a central audit history.' },
-  { title: 'Operations Dashboard', path: '/screenshots/dashboard.png', text: 'Monitor recovery status, worker health, recent failures, audit activity and subscription usage.' },
-];
-
 export const safetyGroups = [
   {
     title: 'Identity and access',
@@ -189,7 +174,7 @@ export const legalPages = {
   },
   terms: {
     title: 'Terms', eyebrow: 'Website terms',
-    body: ['The information on this website is provided for product evaluation and discussion. Capabilities may depend on customer environment, Kafka configuration and subscription terms.', 'ReplayGuard is delivered through private container images, customer-facing documentation and signed subscription licensing.', 'Commercial terms, support commitments and deployment scope should be confirmed in writing before production use.'],
+    body: ['The information on this website is provided for product evaluation and discussion. Capabilities may depend on customer environment, Kafka configuration and subscription terms.', 'ReplayGuard Community is distributed through public container images under the software usage terms in its public repository. Broader capabilities require an appropriate evaluation or paid license.', 'Commercial terms, support commitments and deployment scope should be confirmed in writing before production use.'],
   },
   security: {
     title: 'Security', eyebrow: 'Security posture',
@@ -197,6 +182,6 @@ export const legalPages = {
   },
   contact: {
     title: 'Contact', eyebrow: 'Technical evaluation',
-    body: ['Use the Recovery Workflow Review form on the homepage to request a technical discussion.', 'A useful first conversation covers your current recovery method, Kafka security model, governance requirements and one representative replay, DLQ or offset-reset scenario.'],
+    body: ['Use the demo request form on the homepage or email ravitheja.vkota@replayguard.in to request a technical discussion.', 'A useful first conversation covers your current recovery method, Kafka security model, governance requirements and one representative replay, DLQ or offset-reset scenario.'],
   },
 };
